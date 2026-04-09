@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>철강 압연공정 제조품질 관리 지능화 - 최종 평가</title>
+<style>
+/* ─── Design System ─── */
+:root {
+  --blue: #1a73e8;
+  --navy: #1a1a2e;
+  --green: #388e3c;
+  --orange: #f5a623;
+  --red: #d32f2f;
+  --teal: #00897b;
+  --gray: #757575;
+  --lgray: #f5f5f5;
+  --white: #ffffff;
+  --font: 'Pretendard', 'Malgun Gothic', -apple-system, sans-serif;
+  --slide-w: 1280px;
+  --slide-h: 720px;
+}
+
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: #e0e0e0;
+  color: var(--navy);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Slide Container ─── */
+.slide {
+  width: var(--slide-w);
+  height: var(--slide-h);
+  margin: 20px auto;
+  background: var(--white);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  page-break-after: always;
+  page-break-inside: avoid;
+}
+
+/* ─── Print / PDF ─── */
+@media print {
+  body { background: white; margin: 0; }
+  .slide {
+    margin: 0; box-shadow: none;
+    page-break-after: always;
+    page-break-inside: avoid;
+  }
+}
+
+@page {
+  size: 1280px 720px;
+  margin: 0;
+}
+
+/* ─── Common Elements ─── */
+.slide-header {
+  background: linear-gradient(135deg, var(--blue) 0%, #1557b0 100%);
+  padding: 22px 48px 18px;
+  position: relative;
+}
+.slide-header::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--navy), var(--blue), var(--navy));
+}
+.slide-header h2 {
+  color: white; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;
+}
+.slide-header .badge {
+  position: absolute; right: 48px; top: 50%; transform: translateY(-50%);
+  color: rgba(255,255,255,0.7); font-size: 13px;
+}
+.slide-body { padding: 28px 48px 24px; height: calc(var(--slide-h) - 68px); }
+
+.section-title { font-size: 18px; font-weight: 700; color: var(--navy); margin-bottom: 14px; }
+.section-title::before {
+  content: ''; display: inline-block; width: 4px; height: 18px;
+  background: var(--blue); border-radius: 2px; margin-right: 10px; vertical-align: -2px;
+}
+
+.divider {
+  height: 1px; background: linear-gradient(90deg, transparent, #ddd, transparent);
+  margin: 18px 0;
+}
+
+/* ─── KPI Box ─── */
+.kpi-row { display: flex; gap: 16px; }
+.kpi-box {
+  flex: 1; border-radius: 12px; padding: 20px 16px; text-align: center;
+  color: white; position: relative; overflow: hidden;
+}
+.kpi-box::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+}
+.kpi-box .big { font-size: 30px; font-weight: 800; letter-spacing: -1px; position: relative; }
+.kpi-box .small { font-size: 12px; opacity: 0.85; margin-top: 4px; position: relative; }
+
+/* ─── Flow Box ─── */
+.flow-row { display: flex; align-items: center; gap: 0; }
+.flow-box {
+  border-radius: 10px; padding: 16px 12px; text-align: center;
+  color: white; font-weight: 600; font-size: 14px; line-height: 1.4;
+  position: relative;
+}
+.flow-arrow {
+  width: 28px; text-align: center; color: var(--gray); font-size: 20px;
+  flex-shrink: 0;
+}
+
+/* ─── Card ─── */
+.card {
+  border-radius: 10px; padding: 20px; position: relative;
+  border: 1px solid #e8e8e8; background: white;
+}
+.card.accent-left { border-left: 4px solid var(--blue); }
+.card h4 { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+
+/* ─── Column Layouts ─── */
+.cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.cols-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.cols-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
+.cols-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+
+/* ─── Table ─── */
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th {
+  background: var(--navy); color: white; padding: 10px 12px;
+  text-align: center; font-weight: 600;
+}
+td {
+  padding: 8px 12px; text-align: center; border-bottom: 1px solid #eee;
+}
+tr:nth-child(even) td { background: var(--lgray); }
+
+/* ─── Bullet List ─── */
+.bullet-list { list-style: none; padding-left: 0; }
+.bullet-list li {
+  padding: 4px 0 4px 18px; font-size: 14px; line-height: 1.5;
+  position: relative;
+}
+.bullet-list li::before {
+  content: ''; position: absolute; left: 0; top: 11px;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--blue);
+}
+
+/* ─── Tag / Badge ─── */
+.tag {
+  display: inline-block; padding: 4px 12px; border-radius: 20px;
+  font-size: 12px; font-weight: 600; color: white;
+}
+
+/* ─── Special Slides ─── */
+.slide-cover {
+  background: linear-gradient(135deg, var(--blue) 0%, #1557b0 60%, var(--navy) 100%);
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  text-align: center; color: white;
+}
+.slide-cover h1 { font-size: 42px; font-weight: 800; letter-spacing: -1px; line-height: 1.3; }
+.slide-cover .subtitle { font-size: 22px; opacity: 0.8; margin-top: 16px; }
+.slide-cover .bottom {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: var(--navy); padding: 20px; font-size: 16px; opacity: 0.9;
+}
+
+.slide-dark {
+  background: linear-gradient(160deg, var(--navy) 0%, #16213e 100%);
+  color: white;
+}
+
+.slide-qa {
+  background: linear-gradient(135deg, var(--blue) 0%, #1557b0 50%, var(--navy) 100%);
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  color: white; text-align: center;
+}
+
+/* ─── Highlight Boxes for Dark Slides ─── */
+.highlight-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.highlight-box {
+  border-radius: 14px; padding: 24px 16px; text-align: center;
+  color: white; position: relative; overflow: hidden;
+}
+.highlight-box::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 50%);
+}
+.highlight-box .big { font-size: 36px; font-weight: 800; position: relative; }
+.highlight-box .small { font-size: 13px; opacity: 0.8; margin-top: 6px; position: relative; }
+
+/* Traffic light */
+.light { display: inline-flex; align-items: center; gap: 10px; margin: 4px 0; }
+.light-dot {
+  width: 24px; height: 24px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: white;
+}
+
+/* Phase cards */
+.phase-card {
+  border-radius: 12px; overflow: hidden;
+}
+.phase-card .phase-header {
+  padding: 16px; color: white; font-size: 18px; font-weight: 700; text-align: center;
+}
+.phase-card .phase-body { padding: 16px; background: white; border: 1px solid #e8e8e8; border-top: 0; }
+.phase-card .phase-period { text-align: center; font-size: 13px; font-weight: 600; padding: 6px; }
+
+/* ─── Utilities ─── */
+.text-blue { color: var(--blue); }
+.text-green { color: var(--green); }
+.text-red { color: var(--red); }
+.text-gray { color: var(--gray); }
+.text-navy { color: var(--navy); }
+.text-teal { color: var(--teal); }
+.text-orange { color: var(--orange); }
+.bg-blue { background: var(--blue); }
+.bg-navy { background: var(--navy); }
+.bg-green { background: var(--green); }
+.bg-orange { background: var(--orange); }
+.bg-red { background: var(--red); }
+.bg-teal { background: var(--teal); }
+.fw-700 { font-weight: 700; }
+.fs-12 { font-size: 12px; }
+.fs-13 { font-size: 13px; }
+.fs-14 { font-size: 14px; }
+.fs-15 { font-size: 15px; }
+.fs-16 { font-size: 16px; }
+.mt-8 { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+.mb-8 { margin-bottom: 8px; }
+.mb-12 { margin-bottom: 12px; }
+.gap-12 { gap: 12px; }
+.text-center { text-align: center; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- SLIDE 01: COVER -->
+<!-- ============================================================ -->
+<div class="slide slide-cover">
+  <h1>철강 압연공정 생산현장<br>제조품질 관리 지능화</h1>
+  <div class="subtitle">산업 DX R&D사업 최종 평가 발표</div>
+  <div class="bottom">동국산업 &nbsp;|&nbsp; 디아이솔루션 &nbsp;|&nbsp; 2026. 4. 10 (금)</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 02: AGENDA -->
+<!-- ============================================================ -->
+<div class="slide">
+  <div class="slide-header"><h2>발표 개요</h2></div>
+  <div class="slide-body">
+    <div class="kpi-row mb-12">
+      <div class="kpi-box bg-blue"><div class="big">0.012mm</div><div class="small">RMSE 목표 초과달성</div></div>
+      <div class="kpi-box bg-green"><div class="big">6.3B+건</div><div class="small">ClickHouse 데이터</div></div>
+      <div class="kpi-box bg-navy"><div class="big">~20μs</div><div class="small">ONNX 실시간 추론</div></div>
+      <div class="kpi-box bg-orange"><div class="big">3개 앱</div><div class="small">배치 / 실시간 / 의사결정</div></div>
+    </div>
+    <div class="divider"></div>
+    <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
+      <div style="display:flex; align-items:center; gap:12px; padding:10px 16px; border-left:4px solid var(--blue); background:var(--lgray); border-radius:0 8px 8px 0;">
+        <span class="fw-700 fs-16">1. &nbsp;비즈니스 모델 및 사업화 전략</span>
+        <span class="text-blue fw-700 fs-13" style="margin-left:auto;">평가항목 1, 2</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px; padding:10px 16px; border-left:4px solid var(--green); background:var(--lgray); border-radius:0 8px 8px 0;">
+        <span class="fw-700 fs-16">2. &nbsp;DX 추진 성과 (데이터 / AI)</span>
+        <span class="text-green fw-700 fs-13" style="margin-left:auto;">평가항목 3</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px; padding:10px 16px; border-left:4px solid var(--navy); background:var(--lgray); border-radius:0 8px 8px 0;">
+        <span class="fw-700 fs-16">3. &nbsp;기술 완성도 — 3개 앱 소개</span>
+        <span class="text-navy fw-700 fs-13" style="margin-left:auto;">평가항목 4</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px; padding:10px 16px; border-left:4px solid var(--orange); background:var(--lgray); border-radius:0 8px 8px 0;">
+        <span class="fw-700 fs-16">4. &nbsp;연구개발 실질성</span>
+        <span class="text-orange fw-700 fs-13" style="margin-left:auto;">평가항목 5</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px; padding:10px 16px; border-left:4px solid var(--red); background:var(--lgray); border-radius:0 8px 8px 0;">
+        <span class="fw-700 fs-16">5. &nbsp;추진 결과 및 활용 계획</span>
+        <span class="text-red fw-700 fs-13" style="margin-left:auto;">평가항목 6</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 03: BUSINESS MODEL -->
+<!-- ============================================================ -->
+<div class="slide">
+  <div class="slide-header"><h2>비즈니스 모델 개요</h2><span class="badge">평가항목 1</span></div>
+  <div class="slide-body">
+    <div class="flow-row" style="justify-content:center; gap:0;">
+      <div class="flow-box bg-red" style="flex:1; padding:20px; min-height:130px;">
+        <div class="fw-700 fs-16">AS-IS</div>
+        <div class="fs-13 mt-8" style="opacity:0.9;">작업자 경험 의존<br>품질 편차 발생<br>사후 대응 방식</div>
+      </div>
+      <div class="flow-arrow" style="font-size:28px;">→</div>
+      <div class="flow-box bg-blue" style="flex:1; padding:20px; min-height:130px;">
+        <div class="fw-700 fs-16">DX 전환</div>
+        <div class="fs-13 mt-8" style="opacity:0.9;">AI 두께 예측<br>실시간 모니터링<br>Good-case 가이드</div>
+      </div>
+      <div class="flow-arrow" style="font-size:28px;">→</div>
+      <div class="flow-box bg-green" style="flex:1; padding:20px; min-height:130px;">
+        <div class="fw-700 fs-16">TO-BE</div>
+        <div class="fs-13 mt-8" style="opacity:0.9;">품질 편차 최소화<br>사전 예방 체계<br>의사결정 자동화</div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="section-title">핵심 가치 제안</div>
+    <div class="cols-4" style="gap:14px;">
+      <div class="card" style="border-left:4px solid var(--blue);">
+        <h4 class="text-blue">품질 향상</h4>
+        <p class="fs-13 text-gray">RMSE 0.012mm<br>목표 대비 20% 초과 달성</p>
+      </div>
+      <div class="card" style="border-left:4px solid var(--green);">
+        <h4 class="text-green">생산성 향상</h4>
+        <p class="fs-13 text-gray">실시간 파라미터 최적화<br>Good-case Follow 가이드</p>
+      </div>
+      <div class="card" style="border-left:4px solid var(--orange);">
+        <h4 class="text-orange">비용 절감</h4>
+        <p class="fs-13 text-gray">불량 감소 / 과부하 방지<br>재작업 비용 절감</p>
+      </div>
+      <div class="card" style="border-left:4px solid var(--navy);">
+        <h4 class="text-navy">기술 자산화</h4>
+        <p class="fs-13 text-gray">3개 독립 앱 + AI 모델<br>타 라인/공장 확산 가능</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 04: COMMERCIALIZATION -->
+<!-- ============================================================ -->
+<div class="slide">
+  <div class="slide-header"><h2>사업화 전략 및 확산 계획</h2><span class="badge">평가항목 1, 2</span></div>
+  <div class="slide-body">
+    <div class="cols-3" style="gap:20px;">
+      <div class="phase-card">
+        <div class="phase-header bg-blue">Phase 1 — 내부 확산</div>
+        <div class="phase-period text-blue">2026 H2</div>
+        <div class="phase-body">
+          <ul class="bullet-list">
+            <li>2CRM → 1CRM, 3CRM 확대</li>
+            <li>동일 아키텍처 적용</li>
+            <li>센서태그 매핑만 변경</li>
+          </ul>
+        </div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-header bg-green">Phase 2 — 타사 확장</div>
+        <div class="phase-period text-green">2027 ~ 2028</div>
+        <div class="phase-body">
+          <ul class="bullet-list">
+            <li>타 철강사 POC 추진</li>
+            <li>커스터마이징 서비스</li>
+            <li>라이선스 모델</li>
+          </ul>
+        </div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-header bg-navy">Phase 3 — SaaS 플랫폼</div>
+        <div class="phase-period text-navy">2028 ~</div>
+        <div class="phase-body">
+          <ul class="bullet-list">
+            <li>클라우드 기반 SaaS</li>
+            <li>구독형 서비스 모델</li>
+            <li>산업 표준 플랫폼화</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:20px; background:var(--navy); color:white; border-radius:10px; padding:16px 24px; text-align:center; font-size:15px; font-weight:600;">
+      시장: 국내 냉간압연 공장 30+ &nbsp;|&nbsp; 글로벌 스마트 제조 시장 연 15%+ 성장 &nbsp;|&nbsp; 도메인 특화 AI 경쟁력
+    </div>
+    <div class="mt-12 text-center fs-14 fw-700 text-green">
+      실행 증거: &nbsp;3개 앱 실배포 운영 (211.232.137.203) &nbsp;|&nbsp; 6.3B+ 데이터 &nbsp;|&nbsp; 모델 6회 개선
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 05: THREE APPS -->
+<!-- ============================================================ -->
+<div class="slide">
+  <div class="slide-header"><h2>3개 어플리케이션 실배포 운영</h2><span class="badge">평가항목 2</span></div>
+  <div class="slide-body">
+    <div class="cols-3" style="gap:18px; height:calc(100% - 70px);">
+      <div style="display:flex; flex-direction:column;">
+        <div style="background:linear-gradient(135deg, var(--blue), #1557b0); border-radius:12px 12px 0 0; padding:20px; color:white; text-align:center;">
+          <div style="font-size:22px; font-weight:800;">Batch App</div>
+          <div style="font-size:12px; opacity:0.7; margin-top:4px;">/batch/</div>
+        </div>
+        <div style="border:1px solid #e8e8e8; border-top:0; border-radius:0 0 12px 12px; padding:16px; flex:1;">
+          <div class="fw-700 text-blue fs-14 mb-8">배치 예측/분석 시스템</div>
+          <ul class="bullet-list fs-13">
+            <li>Dashboard (KPI / 오차분포)</li>
+            <li>코일 분석 (패스 일관성)</li>
+            <li>EDA (분포 / 상관분석)</li>
+            <li>예측 실행 (진행률 모니터)</li>
+            <li>리포트 (JSON 내보내기)</li>
+          </ul>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column;">
+        <div style="background:linear-gradient(135deg, var(--green), #2e7d32); border-radius:12px 12px 0 0; padding:20px; color:white; text-align:center;">
+          <div style="font-size:22px; font-weight:800;">Realtime App</div>
+          <div style="font-size:12px; opacity:0.7; margin-top:4px;">/realtime/</div>
+        </div>
+        <div style="border:1px solid #e8e8e8; border-top:0; border-radius:0 0 12px 12px; padding:16px; flex:1;">
+          <div class="fw-700 text-green fs-14 mb-8">실시간 모니터링 시스템</div>
+          <ul class="bullet-list fs-13">
+            <li>PSM v3 + ONNX v24 듀얼모델</li>
+            <li>Kafka → WebSocket 스트리밍</li>
+            <li>알림 엔진 (5개 규칙)</li>
+            <li>파라미터 추천 카드</li>
+            <li>센서 게이지 + 트렌드</li>
+          </ul>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column;">
+        <div style="background:linear-gradient(135deg, var(--teal), #00695c); border-radius:12px 12px 0 0; padding:20px; color:white; text-align:center;">
+          <div style="font-size:22px; font-weight:800;">Director App</div>
+          <div style="font-size:12px; opacity:0.7; margin-top:4px;">/director/</div>
+        </div>
+        <div style="border:1px solid #e8e8e8; border-top:0; border-radius:0 0 12px 12px; padding:16px; flex:1;">
+          <div class="fw-700 text-teal fs-14 mb-8">조업 의사결정 지원</div>
+          <ul class="bullet-list fs-13">
+            <li>유사코일 매칭 (Top 5)</li>
+            <li>신호등 가이드 (G/Y/R)</li>
+            <li>성공확률 예측 P(%)</li>
+            <li>의사결정 추적/평가</li>
+            <li>Good-case Follow</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div style="background:var(--navy); border-radius:8px; padding:12px 20px; text-align:center; color:white; font-size:13px; font-weight:600;">
+      React 18 &nbsp;|&nbsp; FastAPI &nbsp;|&nbsp; ClickHouse &nbsp;|&nbsp; Kafka (3 Broker) &nbsp;|&nbsp; LightGBM &nbsp;|&nbsp; ONNX Runtime &nbsp;|&nbsp; WebSocket &nbsp;|&nbsp; Docker &nbsp;|&nbsp; Nginx
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 06: DATA PIPELINE -->
+<!-- ============================================================ -->
+<div class="slide">
+  <div class="slide-header"><h2>데이터 수집 / 처리 파이프라인</h2><span class="badge">평가항목 3</span></div>
+  <div class="slide-body">
+    <div class="cols-4 mb-12" style="gap:12px;">
+      <div class="flow-box bg-navy" style="padding:14px;"><div class="fw-700">Machbase</div><div class="fs-12 mt-8" style="opacity:.85;">시계열DB<br>9.6B+ 건</div></div>
+      <div class="flow-box bg-navy" style="padding:14px;"><div class="fw-700">Oracle MES</div><div class="fs-12 mt-8" style="opacity:.85;">코일등급<br>48만 건</div></div>
+      <div class="flow-box bg-navy" style="padding:14px;"><div class="fw-700">기상청 API</div><div class="fs-12 mt-8" style="opacity:.85;">날씨 9변수<br>26만 건</div></div>
+      <div class="flow-box bg-navy" style="padding:14px;"><div class="fw-700">PostgreSQL</div><div class="fs-12 mt-8" style="opacity:.85;">ICS 공정<br>실시간</div></div>
+    </div>
+    <div class="text-center text-gray" style="font-size:22px; margin:6px 0;">↓</div>
+    <div style="background:linear-gradient(135deg, var(--orange), #e09100); border-radius:10px; padding:16px 24px; text-align:center; color:white; font-size:16px; font-weight:700;">
+      Apache Kafka &nbsp;(3 Broker &nbsp;|&nbsp; THICK 24파티션 + OTHER 12 + DLQ 6 &nbsp;|&nbsp; LZ4 압축 &nbsp;|&nbsp; 7일 보관)
+    </div>
+    <div class="text-center text-gray" style="font-size:22px; margin:6px 0;">↓</div>
+    <div style="background:linear-gradient(135deg, var(--green), #2e7d32); border-radius:10px; padding:16px 24px; text-align:center; color:white; font-size:16px; font-weight:700;">
+      ClickHouse &nbsp;(Kafka Engine → Buffer → Materialized View → MergeTree 월별 파티션)
+    </div>
+    <div class="divider"></div>
+    <div class="kpi-row" style="gap:16px;">
+      <div class="kpi-box bg-blue" style="padding:16px;"><div class="big" style="font-size:26px;">6.3B+ 레코드</div><div class="small">마이그레이션 100% 완료</div></div>
+      <div class="kpi-box bg-green" style="padding:16px;"><div class="big" style="font-size:26px;">전처리 88% 절감</div><div class="small">Materialized Columns 자동화</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 07: MODEL EVOLUTION -->
+<!-- ============================================================ -->
+<div class="slide">
+  <div class="slide-header"><h2>AI 모델 진화 (ver20 → ver24)</h2><span class="badge">평가항목 3</span></div>
+  <div class="slide-body">
+    <table style="margin-bottom:16px;">
+      <tr><th>버전</th><th>데이터소스</th><th>핵심 변경</th><th>학습시간</th><th>개선</th></tr>
+      <tr><td>ver20</td><td>MariaDB/CSV</td><td>42센서, 기본 파이프라인</td><td>600초</td><td>Baseline</td></tr>
+      <tr><td>ver21</td><td>ClickHouse</td><td>Keras/XGBoost 추가</td><td>600초</td><td>-</td></tr>
+      <tr><td>ver23</td><td>ClickHouse</td><td>통합테이블, JOIN 제거</td><td>180초</td><td class="fw-700 text-green">-70%</td></tr>
+      <tr><td>ver24</td><td>ClickHouse</td><td>Materialized Columns</td><td>70초</td><td class="fw-700 text-green">-88%</td></tr>
+      <tr><td>ver24_h100</td><td>Parquet</td><td>H100 GPU 학습</td><td>-</td><td>대규모</td></tr>
+    </table>
+    <div class="divider"></div>
+    <div class="section-title">운영 듀얼 모델</div>
+    <div class="cols-2" style="gap:20px;">
+      <div style="background:linear-gradient(135deg, var(--blue), #1557b0); border-radius:12px; padding:24px; color:white;">
+        <div style="font-size:20px; font-weight:800;">PSM v3 (LightGBM)</div>
+        <div class="mt-8 fs-14" style="opacity:.9;">22 피처 &nbsp;|&nbsp; 물리 기반 &nbsp;|&nbsp; ~696μs<br>12MB &nbsp;|&nbsp; Pass-aware &nbsp;|&nbsp; 3강종 지원</div>
+      </div>
+      <div style="background:linear-gradient(135deg, var(--navy), #16213e); border-radius:12px; padding:24px; color:white;">
+        <div style="font-size:20px; font-weight:800;">ONNX v24 (LightGBM)</div>
+        <div class="mt-8 fs-14" style="opacity:.9;">50 피처 &nbsp;|&nbsp; 센서+날씨+시간 &nbsp;|&nbsp; ~20μs<br>1.9MB &nbsp;|&nbsp; 경량 실시간 &nbsp;|&nbsp; ONNX Runtime</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 08: KPI -->
+<!-- ============================================================ -->
+<div class="slide">
+  <div class="slide-header"><h2>핵심 성과 지표 (KPI)</h2><span class="badge">평가항목 3</span></div>
+  <div class="slide-body">
+    <div class="kpi-row mb-12">
+      <div class="kpi-box bg-blue" style="padding:22px;"><div class="big">RMSE 0.012mm</div><div class="small">목표 0.015mm → 20% 초과달성</div></div>
+      <div class="kpi-box bg-green" style="padding:22px;"><div class="big">전처리 88% 절감</div><div class="small">600초 → 70초 (Materialized Col.)</div></div>
+      <div class="kpi-box bg-navy" style="padding:22px;"><div class="big">ONNX ~20μs</div><div class="small">PSM v3 대비 34배 빠른 경량모델</div></div>
+      <div class="kpi-box bg-orange" style="padding:22px;"><div class="big">데이터 6.3B+</div><div class="small">THICK 5.15억 + OTHER 2,900만</div></div>
+    </div>
+    <div class="divider"></div>
+    <div class="section-title">Feature Importance Top-5</div>
+    <div class="cols-2" style="gap:24px;">
+      <div>
+        <table>
+          <tr><th>순위</th><th>변수</th><th>Importance</th></tr>
+          <tr><td>1</td><td class="fw-700">두께편차 RH</td><td class="fw-700 text-blue">19,516</td></tr>
+          <tr><td>2</td><td>두께편차 LH</td><td>18,067</td></tr>
+          <tr><td>3</td><td>산출두께 설정값</td><td>5,972</td></tr>
+          <tr><td>4</td><td>총 압하량</td><td>3,951</td></tr>
+          <tr><td>5</td><td>Millstand 토크</td><td>3,795</td></tr>
+        </table>
+        <p class="fs-12 text-gray mt-8">→ 두께 편차가 예측에 가장 중요, Tree 기반 해석 가능성 확보</p>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:center; background:var(--lgray); border-radius:10px; padding:16px; min-height:180px;">
+        <span class="text-gray fs-14">[Feature Importance Chart]</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 09: ARCHITECTURE -->
+<!-- ============================================================ -->
+<div class="slide">
+  <div class="slide-header"><h2>3-App 통합 시스템 아키텍처</h2><span class="badge">평가항목 4</span></div>
+  <div class="slide-body">
+    <div class="section-title">공유 인프라</div>
+    <div class="flow-row" style="justify-content:center; margin-bottom:8px;">
+      <div class="flow-box bg-navy" style="flex:1; padding:14px;">Machbase<br><span class="fs-12" style="opacity:.8;">(원본 센서)</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box bg-orange" style="flex:1; padding:14px;">Kafka<br><span class="fs-12" style="opacity:.8;">(3 Broker)</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box bg-green" style="flex:1; padding:14px;">ClickHouse<br><span class="fs-12" style="opacity:.8;">(분석 DB)</span></div>
+    </div>
+    <div class="text-center text-gray" style="font-size:18px;">↓ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↓ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↓</div>
+    <div class="section-title mt-8">3개 어플리케이션</div>
+    <div class="cols-3" style="gap:16px;">
+      <div class="card" style="border-top:4px solid var(--blue); text-align:center;">
+        <h4 class="text-blue">Batch App</h4>
+        <p class="fs-13">배치 예측/분석</p>
+        <p class="fs-12 text-gray mt-8">React+TS | FastAPI<br>ClickHouse 직접 쿼리</p>
+      </div>
+      <div class="card" style="border-top:4px solid var(--green); text-align:center;">
+        <h4 class="text-green">Realtime App</h4>
+        <p class="fs-13">실시간 모니터링</p>
+        <p class="fs-12 text-gray mt-8">React | FastAPI<br>Kafka → WebSocket</p>
+      </div>
+      <div class="card" style="border-top:4px solid var(--teal); text-align:center;">
+        <h4 class="text-teal">Director App</h4>
+        <p class="fs-13">의사결정 지원</p>
+        <p class="fs-12 text-gray mt-8">React | FastAPI<br>유사코일 매칭</p>
+      </div>
+    </div>
+    <div style="background:var(--navy); border-radius:8px; padding:10px 20px; text-align:center; color:white; font-size:12px; font-weight:600; margin-top:12px;">
+      React 18 &nbsp;|&nbsp; FastAPI &nbsp;|&nbsp; Zustand &nbsp;|&nbsp; Recharts &nbsp;|&nbsp; TailwindCSS &nbsp;|&nbsp; ONNX Runtime &nbsp;|&nbsp; WebSocket &nbsp;|&nbsp; Docker &nbsp;|&nbsp; Nginx
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 10: BATCH APP -->
+<!-- ============================================================ -->
+<div class="slide">
+  <div class="slide-header"><h2>Batch App — 배치 예측/분석 시스템</h2><span class="badge">http://211.232.137.203/batch/</span></div>
+  <div class="slide-body">
+    <div class="cols-5" style="gap:10px; margin-bottom:14px;">
+      <div style="background:var(--blue); border-radius:10px; padding:14px 8px; text-align:center; color:white;"><div class="fw-700 fs-15">Dashboard</div><div class="fs-11 mt-8" style="opacity:.85;">KPI 게이지<br>오차 분포<br>패스별 성능</div></div>
+      <div style="background:var(--green); border-radius:10px; padding:14px 8px; text-align:center; color:white;"><div class="fw-700 fs-15">Analysis</div><div class="fs-11 mt-8" style="opacity:.85;">코일 검색<br>패스 일관성<br>시계열 차트</div></div>
+      <div style="background:var(--orange); border-radius:10px; padding:14px 8px; text-align:center; color:white;"><div class="fw-700 fs-15">EDA</div><div class="fs-11 mt-8" style="opacity:.85;">기간별 통계<br>분포 히스토그램<br>패스별 비교</div></div>
+      <div style="background:var(--red); border-radius:10px; padding:14px 8px; text-align:center; color:white;"><div class="fw-700 fs-15">Predict</div><div class="fs-11 mt-8" style="opacity:.85;">예측 실행<br>진행률 모니터<br>결과 상세</div></div>
+      <div style="background:var(--navy); border-radius:10px; padding:14px 8px; text-align:center; color:white;"><div class="fw-700 fs-15">Report</div><div class="fs-11 mt-8" style="opacity:.85;">모델 정보<br>Feature Imp.<br>JSON 내보내기</div></div>
+    </div>
+    <div class="divider"></div>
+    <div class="section-title">핵심 기능</div>
+    <ul class="bullet-list">
+      <li>ClickHouse 대용량 데이터 직접 쿼리 <strong>(6.3B+ 레코드)</strong></li>
+      <li>LightGBM / ONNX 모델 기반 배치 예측 + 진행률 실시간 모니터링</li>
+      <li>LTTB 다운샘플링으로 대용량 시계열 최적화 시각화</li>
+      <li>패스 일관성 검증 (두께 감소 원칙 자동 체크)</li>
+      <li>Feature Importance 시각화 + 분석 리포트 JSON 내보내기</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 11: REALTIME APP -->
+<!-- ============================================================ -->
+<div class="slide">
+  <div class="slide-header"><h2>Realtime App — 실시간 모니터링</h2><span class="badge">http://211.232.137.203/realtime/</span></div>
+  <div class="slide-body">
+    <div class="flow-row" style="gap:0; margin-bottom:14px;">
+      <div class="flow-box bg-orange" style="flex:1; padding:12px;">Kafka<br>수신</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box bg-blue" style="flex:1; padding:12px;">PSM v3 +<br>ONNX v24</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box bg-red" style="flex:1; padding:12px;">Alert<br>Engine</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box bg-green" style="flex:1; padding:12px;">Suggestion<br>Service</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box bg-navy" style="flex:1; padding:12px;">WebSocket<br>→ React</div>
+    </div>
+    <div class="divider"></div>
+    <div class="cols-2" style="gap:20px;">
+      <div>
+        <div class="section-title">듀얼 모델</div>
+        <div style="background:linear-gradient(135deg, var(--blue), #1557b0); border-radius:10px; padding:18px; color:white; font-size:14px; line-height:1.6;">
+          <strong>PSM v3:</strong> 22피처, 물리기반, Pass-aware, ~696μs<br>
+          <strong>ONNX v24:</strong> 50피처, 센서+날씨, 경량, ~20μs<br>
+          <span style="opacity:.8;">→ 동시 예측으로 상호 검증 + 리던던시</span>
+        </div>
+      </div>
+      <div>
+        <div class="section-title">알림 엔진 (5개 규칙)</div>
+        <table>
+          <tr><th>규칙</th><th>Warning</th><th>Critical</th></tr>
+          <tr><td>두께 편차</td><td>15μm</td><td class="fw-700 text-red">30μm</td></tr>
+          <tr><td>속도 편차</td><td>3%</td><td>7%</td></tr>
+          <tr><td>장력 편차</td><td>3%</td><td>7%</td></tr>
+          <tr><td>압연력</td><td colspan="2">2.5σ 이상 감지</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="fs-13" style="line-height:1.6;">
+      <strong>UI:</strong> 센서 게이지 (두께/속도/장력/압연력) &nbsp;|&nbsp; 트렌드 차트 (예측 vs 실측) &nbsp;|&nbsp; 알림 토스트 (Critical 8초) &nbsp;|&nbsp; 파라미터 추천 카드
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 12: DIRECTOR APP -->
+<!-- ============================================================ -->
+<div class="slide">
+  <div class="slide-header"><h2>Director App — 조업 의사결정 지원</h2><span class="badge">http://211.232.137.203/director/</span></div>
+  <div class="slide-body">
+    <div class="flow-row" style="gap:0; margin-bottom:14px;">
+      <div class="flow-box bg-orange" style="flex:1; padding:12px;">실시간<br>센서 데이터</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box bg-blue" style="flex:1; padding:12px;">유사코일<br>매칭</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box bg-green" style="flex:1; padding:12px;">Gap 분석<br>신호등</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box bg-navy" style="flex:1; padding:12px;">확률 예측<br>P(개선)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box bg-teal" style="flex:1; padding:12px;">의사결정<br>추적</div>
+    </div>
+    <div class="divider"></div>
+    <div class="cols-2" style="gap:24px;">
+      <div>
+        <div class="section-title">유사코일 매칭 알고리즘</div>
+        <div class="card accent-left" style="font-size:14px; line-height:1.7;">
+          <strong>Score</strong> = 0.35×강종 + 0.30×두께 + 0.15×패스수<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ 0.10×최근성 + 0.10×품질점수<br><br>
+          <span class="text-gray fs-12">Top 5 추출 &nbsp;|&nbsp; 캐시 5분 &nbsp;|&nbsp; 최근 90일 &nbsp;|&nbsp; p10/mean/p90</span>
+        </div>
+      </div>
+      <div>
+        <div class="section-title">신호등 가이드</div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div class="light"><div class="light-dot" style="background:var(--green);">G</div> <span class="fs-14">편차 &lt; 10μm 또는 &lt; 5% → <strong class="text-green">정상</strong></span></div>
+          <div class="light"><div class="light-dot" style="background:var(--orange);">Y</div> <span class="fs-14">편차 10~25μm 또는 5~15% → <strong class="text-orange">주의</strong></span></div>
+          <div class="light"><div class="light-dot" style="background:var(--red);">R</div> <span class="fs-14">편차 ≥ 25μm 또는 ≥ 15% → <strong class="text-red">조치 필요</strong></span></div>
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div style="background:var(--navy); border-radius:10px; padding:14px 24px; color:white; font-size:14px; line-height:1.6; text-align:center;">
+      파라미터 추천 → <strong>P(개선) / P(유지) / P(악화)</strong> 확률 표시 → 작업자 적용/무시 → <strong>30초 후 자동 평가</strong> → 이력 축적 → 선순환
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 13: INFERENCE PIPELINE -->
+<!-- ============================================================ -->
+<div class="slide">
+  <div class="slide-header"><h2>실시간 추론 파이프라인 상세</h2><span class="badge">평가항목 4</span></div>
+  <div class="slide-body">
+    <div class="cols-4" style="gap:10px; margin-bottom:8px;">
+      <div class="flow-box bg-orange" style="padding:14px;">1. Kafka 수신</div>
+      <div class="flow-box bg-navy" style="padding:14px;">2. 데이터 병합</div>
+      <div class="flow-box bg-blue" style="padding:14px;">3. PSM v3 실행</div>
+      <div class="flow-box bg-navy" style="padding:14px;">4. ONNX v24 병렬</div>
+    </div>
+    <div class="cols-4" style="gap:10px; margin-bottom:14px;">
+      <div class="flow-box bg-red" style="padding:14px;">5. Alert 체크</div>
+      <div class="flow-box bg-green" style="padding:14px;">6. Suggestion 추천</div>
+      <div class="flow-box bg-green" style="padding:14px; opacity:.8;">7. ClickHouse 저장</div>
+      <div class="flow-box bg-teal" style="padding:14px;">8. WebSocket 전송</div>
+    </div>
+    <div class="divider"></div>
+    <div class="cols-2" style="gap:24px;">
+      <div>
+        <div class="section-title">레이턴시 분석</div>
+        <table>
+          <tr><th>구간</th><th>소요시간</th></tr>
+          <tr><td>Kafka 수신</td><td>&lt; 1초</td></tr>
+          <tr><td>PSM v3 추론</td><td>~696μs</td></tr>
+          <tr><td>ONNX v24 추론</td><td class="fw-700 text-blue">~20μs</td></tr>
+          <tr><td>WebSocket 전송</td><td>&lt; 10ms</td></tr>
+          <tr><td class="fw-700">전체 E2E</td><td class="fw-700 text-green">&lt; 2초</td></tr>
+        </table>
+      </div>
+      <div>
+        <div class="section-title">동시성 모델</div>
+        <ul class="bullet-list fs-14">
+          <li><strong>Kafka Consumer:</strong> 별도 데몬 스레드</li>
+          <li><strong>예측/알림/추천:</strong> 동기 처리 (일관성)</li>
+          <li><strong>ClickHouse:</strong> 비동기 배치 저장</li>
+          <li><strong>WebSocket:</strong> asyncio 코루틴 브리징</li>
+          <li><strong>Stats:</strong> 5초 주기 비동기 브로드캐스트</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 14: TECH QUALITY -->
+<!-- ============================================================ -->
+<div class="slide">
+  <div class="slide-header"><h2>기술 품질 및 배포 구조</h2><span class="badge">평가항목 4</span></div>
+  <div class="slide-body">
+    <div class="cols-2" style="gap:24px; margin-bottom:14px;">
+      <div>
+        <div class="section-title">코드 / 시스템 규모</div>
+        <table>
+          <tr><th>항목</th><th>내용</th></tr>
+          <tr><td>Python 코드</td><td>5,000+ 줄</td></tr>
+          <tr><td>Jupyter 노트북</td><td>10+ 개</td></tr>
+          <tr><td>모델 파일</td><td>~18GB</td></tr>
+          <tr><td>기술 문서</td><td>30+ 건</td></tr>
+          <tr><td>시각화 자산</td><td>15+ PNG</td></tr>
+        </table>
+      </div>
+      <div>
+        <div class="section-title">배포 구조</div>
+        <table>
+          <tr><th>서비스</th><th>포트</th><th>방식</th></tr>
+          <tr><td>Batch Backend</td><td>8000</td><td>FastAPI + Nginx</td></tr>
+          <tr><td>Realtime Backend</td><td>8088</td><td>FastAPI + Kafka</td></tr>
+          <tr><td>Director Backend</td><td>8089</td><td>FastAPI + Systemd</td></tr>
+          <tr><td>Frontend (3개)</td><td>Nginx</td><td>React 정적배포</td></tr>
+          <tr><td>Kafka Cluster</td><td>9092-94</td><td>Docker Compose</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="cols-2" style="gap:24px;">
+      <div>
+        <div class="section-title" style="color:var(--green);">검증 결과 (전 항목 PASS)</div>
+        <ul class="bullet-list fs-13">
+          <li><strong>TC-01</strong> 데이터 로딩 NULL 0건</li>
+          <li><strong>TC-02</strong> 진척도 실시간 갱신</li>
+          <li><strong>TC-03</strong> 모델 학습 Loss 감소</li>
+          <li><strong>TC-04</strong> RMSE &lt; 0.015mm 달성</li>
+          <li><strong>TC-05</strong> 처리 &lt; 120초</li>
+        </ul>
+      </div>
+      <div>
+        <div class="section-title" style="color:var(--red);">Data Leakage 방지</div>
+        <div class="card" style="border-left:4px solid var(--red); font-size:13px; line-height:1.7;">
+          THK_CAL 계산에 직접 사용되는 변수를 의도적 제외:<br>
+          <strong>DB230_REAL8</strong> (짝수 패스 두께 보정)<br>
+          <strong>DB230_REAL64</strong> (입측 두께)
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 15: IMPROVEMENT -->
+<!-- ============================================================ -->
+<div class="slide">
+  <div class="slide-header"><h2>생산공정 개선 효과</h2><span class="badge">평가항목 5</span></div>
+  <div class="slide-body">
+    <div class="section-title">Before vs After</div>
+    <table style="margin-bottom:14px;">
+      <tr><th>항목</th><th>Before (수동)</th><th>After (AI)</th><th>개선</th></tr>
+      <tr><td>두께 품질</td><td>사후 측정 / 대응</td><td class="fw-700">실시간 예측 / 사전 대응</td><td class="tag bg-blue">혁신</td></tr>
+      <tr><td>편차 감지</td><td>작업자 육안</td><td class="fw-700">15μm/30μm 자동 알림</td><td class="tag bg-green">실시간</td></tr>
+      <tr><td>파라미터</td><td>경험 기반 판단</td><td class="fw-700">AI 추천 + 확률 제시</td><td class="tag bg-orange">정량화</td></tr>
+      <tr><td>사례 참조</td><td>기억 의존</td><td class="fw-700">유사코일 자동 매칭</td><td class="tag bg-teal">자동화</td></tr>
+      <tr><td>품질 이력</td><td>수기 기록</td><td class="fw-700">자동 저장 + 리포트</td><td class="tag bg-navy">디지털화</td></tr>
+    </table>
+    <div class="divider"></div>
+    <div class="section-title">기대 효과</div>
+    <div class="kpi-row">
+      <div class="kpi-box bg-blue" style="padding:14px;"><div class="big" style="font-size:24px;">RMSE 0.012mm</div><div class="small">두께 예측 정확도</div></div>
+      <div class="kpi-box bg-green" style="padding:14px;"><div class="big" style="font-size:24px;">88% 절감</div><div class="small">전처리 부하</div></div>
+      <div class="kpi-box bg-red" style="padding:14px;"><div class="big" style="font-size:24px;">-80%</div><div class="small">설비 과부하 (5→1회/월)</div></div>
+      <div class="kpi-box bg-orange" style="padding:14px;"><div class="big" style="font-size:24px;">+22%</div><div class="small">Load Balance (75→92)</div></div>
+      <div class="kpi-box bg-navy" style="padding:14px;"><div class="big" style="font-size:24px;">-15%</div><div class="small">압연시간 (15.5→13.2분)</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 16: SCENARIOS -->
+<!-- ============================================================ -->
+<div class="slide">
+  <div class="slide-header"><h2>현장 적용 시나리오</h2><span class="badge">평가항목 5</span></div>
+  <div class="slide-body">
+    <div class="cols-3" style="gap:18px; margin-bottom:16px;">
+      <div style="display:flex; flex-direction:column;">
+        <div style="background:var(--blue); border-radius:12px 12px 0 0; padding:16px; color:white; text-align:center; font-size:18px; font-weight:700;">교대 후 분석</div>
+        <div style="background:var(--navy); color:white; padding:10px; text-align:center; font-size:14px;">→ Batch App</div>
+        <div style="border:1px solid #e8e8e8; border-top:0; border-radius:0 0 12px 12px; padding:16px; flex:1;">
+          <ul class="bullet-list fs-13">
+            <li>교대 직후 전 시프트 분석</li>
+            <li>배치 예측 실행</li>
+            <li>이상 코일 식별</li>
+            <li>리포트 생성/공유</li>
+          </ul>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column;">
+        <div style="background:var(--green); border-radius:12px 12px 0 0; padding:16px; color:white; text-align:center; font-size:18px; font-weight:700;">압연 중 모니터링</div>
+        <div style="background:var(--navy); color:white; padding:10px; text-align:center; font-size:14px;">→ Realtime App</div>
+        <div style="border:1px solid #e8e8e8; border-top:0; border-radius:0 0 12px 12px; padding:16px; flex:1;">
+          <ul class="bullet-list fs-13">
+            <li>실시간 두께 감시</li>
+            <li>편차 초과 시 자동 알림</li>
+            <li>파라미터 조정 추천</li>
+            <li>즉시 대응</li>
+          </ul>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column;">
+        <div style="background:var(--teal); border-radius:12px 12px 0 0; padding:16px; color:white; text-align:center; font-size:18px; font-weight:700;">신규 코일 투입</div>
+        <div style="background:var(--navy); color:white; padding:10px; text-align:center; font-size:14px;">→ Director App</div>
+        <div style="border:1px solid #e8e8e8; border-top:0; border-radius:0 0 12px 12px; padding:16px; flex:1;">
+          <ul class="bullet-list fs-13">
+            <li>유사 성공 코일 매칭</li>
+            <li>참조 파라미터 가이드</li>
+            <li>의사결정 이력 축적</li>
+            <li>Good-case Follow</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div style="background:var(--navy); border-radius:10px; padding:14px 24px; color:white; font-size:14px; text-align:center; font-weight:600;">
+      사용성: &nbsp;한글 UI &nbsp;|&nbsp; 색상 코딩 (녹/황/적) &nbsp;|&nbsp; 신호등 가이드 &nbsp;|&nbsp; 인터랙티브 차트 &nbsp;|&nbsp; 코일 랭킹 &nbsp;|&nbsp; JSON 리포트
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 17: QUANTITATIVE -->
+<!-- ============================================================ -->
+<div class="slide">
+  <div class="slide-header"><h2>정량적 성과 (목표 대비 달성)</h2><span class="badge">평가항목 6</span></div>
+  <div class="slide-body">
+    <table style="margin-bottom:20px;">
+      <tr><th>성과 항목</th><th>목표</th><th>달성</th><th>달성률</th><th>비고</th></tr>
+      <tr><td>두께 예측 RMSE</td><td>0.015mm</td><td class="fw-700 text-blue">0.012mm</td><td class="fw-700 text-green">120%</td><td>목표 초과</td></tr>
+      <tr><td>데이터 수집량</td><td>1억건+</td><td class="fw-700 text-blue">6.3억건+</td><td class="fw-700 text-green">630%</td><td>대폭 초과</td></tr>
+      <tr><td>전처리 시간</td><td>120초 이내</td><td class="fw-700 text-blue">70초</td><td class="fw-700 text-green">171%</td><td>88% 절감</td></tr>
+      <tr><td>실시간 추론</td><td>100ms 이내</td><td class="fw-700 text-blue">~20μs</td><td class="fw-700 text-green">5000x</td><td>ONNX</td></tr>
+      <tr><td>모델 반복개선</td><td>3회+</td><td class="fw-700 text-blue">6회</td><td class="fw-700 text-green">200%</td><td>ver20→24</td></tr>
+      <tr><td>웹 시스템</td><td>1개</td><td class="fw-700 text-blue">3개</td><td class="fw-700 text-green">300%</td><td>배치/실시간/의사결정</td></tr>
+      <tr><td>기술보고서</td><td>10건+</td><td class="fw-700 text-blue">18건+</td><td class="fw-700 text-green">180%</td><td>docx/pptx</td></tr>
+    </table>
+    <div style="background:linear-gradient(135deg, var(--green), #2e7d32); border-radius:14px; padding:24px; text-align:center; color:white;">
+      <div style="font-size:24px; font-weight:800;">전 항목 목표 100% 이상 달성</div>
+      <div style="font-size:15px; opacity:.85; margin-top:6px;">핵심 지표 (RMSE, 데이터, 시스템) 모두 초과 달성</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 18: DELIVERABLES -->
+<!-- ============================================================ -->
+<div class="slide">
+  <div class="slide-header"><h2>연구 산출물 종합</h2><span class="badge">평가항목 6</span></div>
+  <div class="slide-body">
+    <table style="margin-bottom:16px;">
+      <tr><th>카테고리</th><th>산출물</th><th>수량</th><th>상세</th></tr>
+      <tr><td>웹 어플리케이션</td><td>Batch / Realtime / Director</td><td class="fw-700">3개</td><td>React + FastAPI 풀스택</td></tr>
+      <tr><td>AI 모델</td><td>PSM v1~v3, ONNX v24, ver20~24</td><td class="fw-700">8+</td><td>LightGBM, ONNX 변환</td></tr>
+      <tr><td>데이터 파이프라인</td><td>Kafka, ClickHouse, Producer</td><td class="fw-700">1식</td><td>Machbase→Kafka→CH</td></tr>
+      <tr><td>기술보고서</td><td>모델링/전처리/EDA/PSM</td><td class="fw-700">18건+</td><td>docx, pptx</td></tr>
+      <tr><td>데이터 마이그레이션</td><td>THICK + OTHER 전체</td><td class="fw-700">9.6억건</td><td>성공률 100%</td></tr>
+      <tr><td>H100 학습 패키지</td><td>Parquet + 학습코드</td><td class="fw-700">1식</td><td>GPU 학습</td></tr>
+      <tr><td>모니터링 인프라</td><td>Kafka UI, Docker, Nginx</td><td class="fw-700">1식</td><td>프로덕션</td></tr>
+    </table>
+    <div class="divider"></div>
+    <div class="kpi-row">
+      <div class="kpi-box bg-blue" style="padding:18px;"><div class="big" style="font-size:22px;">기술 자산 가치</div><div class="small">Python 5,000+ LOC | 모델 18GB | 문서 30+</div></div>
+      <div class="kpi-box bg-teal" style="padding:18px;"><div class="big" style="font-size:22px;">확장 가능성</div><div class="small">1CRM/3CRM 즉시 적용 | 타사 확산 | SaaS</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 19: UTILIZATION -->
+<!-- ============================================================ -->
+<div class="slide">
+  <div class="slide-header"><h2>성과 활용 계획</h2><span class="badge">평가항목 6</span></div>
+  <div class="slide-body">
+    <div class="cols-3" style="gap:18px; margin-bottom:16px;">
+      <div class="phase-card">
+        <div class="phase-header bg-blue">단기 (2026 H2)</div>
+        <div class="phase-body">
+          <ul class="bullet-list fs-14">
+            <li>2CRM 시스템 안정화</li>
+            <li>모델 재학습 자동화</li>
+            <li>작업자 교육 / 피드백</li>
+            <li>Director 실운영 전환</li>
+          </ul>
+        </div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-header bg-green">중기 (2027)</div>
+        <div class="phase-body">
+          <ul class="bullet-list fs-14">
+            <li>1CRM, 3CRM 확장</li>
+            <li>센서태그 표준화</li>
+            <li>통합 대시보드</li>
+            <li>성능 고도화</li>
+          </ul>
+        </div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-header bg-navy">장기 (2028~)</div>
+        <div class="phase-body">
+          <ul class="bullet-list fs-14">
+            <li>SaaS 플랫폼 개발</li>
+            <li>타 철강사 POC</li>
+            <li>산업 표준 프레임워크</li>
+            <li>논문 / 특허 출원</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="cols-2" style="gap:18px;">
+      <div style="background:linear-gradient(135deg, var(--navy), #16213e); border-radius:12px; padding:20px; color:white;">
+        <div style="font-size:16px; font-weight:700; margin-bottom:8px;">데이터 플랫폼</div>
+        <div class="fs-13" style="opacity:.85; line-height:1.6;">수집 프로세스 표준화 &nbsp;|&nbsp; 품질 관리 체계 수립 &nbsp;|&nbsp; 메타데이터 관리</div>
+      </div>
+      <div style="background:linear-gradient(135deg, var(--blue), #1557b0); border-radius:12px; padding:20px; color:white;">
+        <div style="font-size:16px; font-weight:700; margin-bottom:8px;">서비스 플랫폼</div>
+        <div class="fs-13" style="opacity:.85; line-height:1.6;">분석 서비스 API화 &nbsp;|&nbsp; 마이크로서비스 전환 &nbsp;|&nbsp; 클라우드 네이티브 대응</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 20: ROADMAP -->
+<!-- ============================================================ -->
+<div class="slide">
+  <div class="slide-header"><h2>향후 개발 로드맵</h2></div>
+  <div class="slide-body">
+    <div class="cols-4" style="gap:12px; margin-bottom:8px;">
+      <div style="background:var(--blue); border-radius:10px; padding:14px; color:white; text-align:center;"><div class="fw-700 fs-16">2026 H2</div><div class="fs-12 mt-8" style="opacity:.8;">안정화</div></div>
+      <div style="background:var(--green); border-radius:10px; padding:14px; color:white; text-align:center;"><div class="fw-700 fs-16">2027 H1</div><div class="fs-12 mt-8" style="opacity:.8;">CRM 확장</div></div>
+      <div style="background:var(--orange); border-radius:10px; padding:14px; color:white; text-align:center;"><div class="fw-700 fs-16">2027 H2</div><div class="fs-12 mt-8" style="opacity:.8;">통합 플랫폼</div></div>
+      <div style="background:var(--navy); border-radius:10px; padding:14px; color:white; text-align:center;"><div class="fw-700 fs-16">2028~</div><div class="fs-12 mt-8" style="opacity:.8;">SaaS / 확산</div></div>
+    </div>
+    <div class="cols-4" style="gap:12px; margin-bottom:14px;">
+      <div class="card" style="padding:12px;">
+        <ul class="bullet-list fs-12"><li>2CRM 안정화</li><li>재학습 자동화</li><li>작업자 교육</li><li>Director 실운영</li></ul>
+      </div>
+      <div class="card" style="padding:12px;">
+        <ul class="bullet-list fs-12"><li>1CRM 적용</li><li>3CRM 적용</li><li>센서매핑 표준화</li><li>벤치마크</li></ul>
+      </div>
+      <div class="card" style="padding:12px;">
+        <ul class="bullet-list fs-12"><li>통합 대시보드</li><li>거버넌스</li><li>API 표준화</li><li>마이크로서비스</li></ul>
+      </div>
+      <div class="card" style="padding:12px;">
+        <ul class="bullet-list fs-12"><li>SaaS 개발</li><li>타사 POC</li><li>논문/특허</li><li>산업 표준</li></ul>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="section-title">PSM (Pass Schedule Management) 개발 현황</div>
+    <table>
+      <tr><th>항목</th><th>상태</th><th>상세</th></tr>
+      <tr><td>알고리즘 설계</td><td class="fw-700 text-green">완료</td><td>Multi-Objective Optimization (유전 알고리즘)</td></tr>
+      <tr><td>부하 예측 모델</td><td class="fw-700 text-blue">진행중 60%</td><td>XGBoost Surrogate, RMSE&lt;50ton</td></tr>
+      <tr><td>최적화 엔진</td><td class="fw-700 text-orange">진행중 40%</td><td>유전 알고리즘 코어 + 제약조건</td></tr>
+      <tr><td>PSM UI</td><td class="fw-700 text-green">설계 완료</td><td>패스 스케줄 테이블 + 부하 분포 차트</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 21: SUMMARY -->
+<!-- ============================================================ -->
+<div class="slide slide-dark">
+  <div style="padding:36px 48px;">
+    <h2 style="color:white; font-size:26px; text-align:center; margin-bottom:24px;">
+      요약: &nbsp;철강 압연공정 제조품질 관리 지능화
+    </h2>
+    <div class="highlight-grid" style="gap:18px;">
+      <div class="highlight-box bg-blue"><div class="big">0.012mm</div><div class="small">RMSE 목표 초과달성</div></div>
+      <div class="highlight-box bg-green"><div class="big">6.3B+ 건</div><div class="small">ClickHouse 데이터</div></div>
+      <div class="highlight-box bg-orange"><div class="big">~20μs</div><div class="small">ONNX 실시간 추론</div></div>
+      <div class="highlight-box bg-teal"><div class="big">3개 앱</div><div class="small">배치 / 실시간 / 의사결정</div></div>
+      <div class="highlight-box bg-red"><div class="big">88%</div><div class="small">전처리 시간 절감</div></div>
+      <div class="highlight-box bg-blue" style="opacity:.85;"><div class="big">6회</div><div class="small">모델 반복 개선</div></div>
+    </div>
+    <div style="text-align:center; margin-top:28px;">
+      <div style="color:rgba(255,255,255,.6); font-size:16px;">
+        Machbase &nbsp;→&nbsp; Kafka &nbsp;→&nbsp; ClickHouse &nbsp;→&nbsp; AI (LightGBM / ONNX) &nbsp;→&nbsp; 3개 React 앱
+      </div>
+      <div style="color:#82c882; font-size:15px; font-weight:700; margin-top:10px;">
+        전 평가항목 목표 100% 이상 달성 &nbsp;|&nbsp; 실배포 운영 중 &nbsp;|&nbsp; 확산 준비 완료
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 22: Q&A -->
+<!-- ============================================================ -->
+<div class="slide slide-qa">
+  <div style="font-size:72px; font-weight:800; letter-spacing:4px;">Q & A</div>
+  <div style="font-size:24px; opacity:.8; margin-top:16px;">질의응답</div>
+  <div style="position:absolute; bottom:0; left:0; right:0; background:rgba(26,26,46,.5); padding:24px; font-size:17px; opacity:.85;">
+    동국산업 &nbsp;|&nbsp; 디아이솔루션 &nbsp;|&nbsp; 감사합니다
+  </div>
+</div>
+
+</body>
+</html>

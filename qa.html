@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>최종 평가 Q&A 대비 자료 - 동국산업</title>
+<style>
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+:root {
+  --blue: #1a73e8;
+  --navy: #1a1a2e;
+  --green: #388e3c;
+  --orange: #f5a623;
+  --red: #d32f2f;
+  --teal: #00897b;
+  --gray: #757575;
+  --lgray: #f7f8fa;
+  --border: #e4e7ec;
+  --font: 'Pretendard', 'Malgun Gothic', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--lgray);
+  color: var(--navy);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Layout ─── */
+.container { max-width: 960px; margin: 0 auto; padding: 24px 20px 60px; }
+
+/* ─── Header ─── */
+.doc-header {
+  background: linear-gradient(135deg, var(--blue) 0%, var(--navy) 100%);
+  color: white; padding: 40px 48px; border-radius: 16px; margin-bottom: 32px;
+  position: relative; overflow: hidden;
+}
+.doc-header::before {
+  content: ''; position: absolute; top: -50%; right: -10%; width: 300px; height: 300px;
+  background: rgba(255,255,255,0.05); border-radius: 50%;
+}
+.doc-header h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
+.doc-header .sub { font-size: 15px; opacity: 0.75; margin-top: 8px; }
+.doc-header .meta {
+  display: flex; gap: 24px; margin-top: 16px; font-size: 13px; opacity: 0.65;
+}
+
+/* ─── TOC ─── */
+.toc {
+  background: white; border-radius: 12px; padding: 24px 28px; margin-bottom: 28px;
+  border: 1px solid var(--border);
+}
+.toc h3 { font-size: 16px; color: var(--navy); margin-bottom: 12px; }
+.toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.toc a {
+  display: block; padding: 8px 14px; border-radius: 8px; font-size: 14px;
+  color: var(--navy); text-decoration: none; border-left: 3px solid transparent;
+  transition: all 0.15s;
+}
+.toc a:hover { background: var(--lgray); border-left-color: var(--blue); }
+.toc .count { color: var(--gray); font-size: 12px; }
+
+/* ─── Strategy Box ─── */
+.strategy {
+  background: linear-gradient(135deg, #fff8e1, #fff3e0); border-radius: 12px;
+  padding: 24px 28px; margin-bottom: 28px; border: 1px solid #ffe0b2;
+}
+.strategy h3 { color: #e65100; font-size: 16px; margin-bottom: 10px; }
+.strategy p { font-size: 14px; color: #bf360c; }
+
+/* ─── Tier Section ─── */
+.tier {
+  margin-bottom: 32px;
+}
+.tier-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 24px; border-radius: 12px 12px 0 0; color: white;
+  font-size: 18px; font-weight: 700;
+}
+.tier-header .tier-badge {
+  background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px;
+  font-size: 12px; font-weight: 600;
+}
+
+/* ─── QA Card ─── */
+.qa-card {
+  background: white; border: 1px solid var(--border); border-top: 0;
+  padding: 0;
+}
+.qa-card:last-child { border-radius: 0 0 12px 12px; }
+
+.qa-q {
+  padding: 18px 24px; cursor: pointer; display: flex; align-items: flex-start; gap: 12px;
+  border-bottom: 1px solid var(--border); transition: background 0.1s;
+}
+.qa-q:hover { background: var(--lgray); }
+.qa-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 50%; font-size: 12px; font-weight: 700;
+  flex-shrink: 0; color: white;
+}
+.qa-q-text { font-size: 15px; font-weight: 700; color: var(--navy); flex: 1; }
+.qa-tags { display: flex; gap: 6px; flex-shrink: 0; }
+.qa-tag {
+  padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
+  background: var(--lgray); color: var(--gray);
+}
+.qa-tag.hot { background: #ffebee; color: var(--red); }
+.qa-tag.tech { background: #e3f2fd; color: var(--blue); }
+.qa-tag.biz { background: #e8f5e9; color: var(--green); }
+
+.qa-a {
+  padding: 20px 24px 20px 64px; background: #fafbfc;
+  border-bottom: 1px solid var(--border); font-size: 14px; line-height: 1.75;
+}
+.qa-a strong { color: var(--navy); }
+.qa-a .key-point {
+  background: #e8f0fe; border-radius: 8px; padding: 12px 16px; margin: 10px 0;
+  border-left: 3px solid var(--blue); font-size: 13px;
+}
+.qa-a .warning-point {
+  background: #fff3e0; border-radius: 8px; padding: 10px 16px; margin: 10px 0;
+  border-left: 3px solid var(--orange); font-size: 13px;
+}
+.qa-a table { width: 100%; margin: 10px 0; font-size: 13px; border-collapse: collapse; }
+.qa-a th { background: var(--navy); color: white; padding: 8px 10px; text-align: center; }
+.qa-a td { padding: 6px 10px; text-align: center; border-bottom: 1px solid #eee; }
+.qa-a tr:nth-child(even) td { background: var(--lgray); }
+.qa-a code { background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-size: 13px; font-family: monospace; }
+.qa-a ul { padding-left: 18px; margin: 8px 0; }
+.qa-a li { margin: 4px 0; }
+
+/* ─── Crisis Section ─── */
+.crisis {
+  background: white; border-radius: 12px; padding: 28px; margin-top: 32px;
+  border: 1px solid var(--border);
+}
+.crisis h3 { font-size: 18px; color: var(--red); margin-bottom: 16px; }
+.crisis-item {
+  padding: 14px 18px; border-left: 3px solid var(--red); background: #fff5f5;
+  border-radius: 0 8px 8px 0; margin-bottom: 10px;
+}
+.crisis-item h4 { font-size: 14px; color: var(--red); margin-bottom: 6px; }
+.crisis-item p { font-size: 13px; color: var(--navy); }
+
+/* ─── Print ─── */
+@media print {
+  body { background: white; }
+  .container { max-width: 100%; padding: 12px; }
+  .doc-header { border-radius: 0; margin-bottom: 16px; }
+  .qa-a { page-break-inside: avoid; }
+  .tier { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- ═══════════ HEADER ═══════════ -->
+<div class="doc-header">
+  <h1>최종 평가 Q&A 대비 자료</h1>
+  <div class="sub">철강 압연공정 생산현장 제조품질 관리 지능화 — 동국산업 / 디아이솔루션</div>
+  <div class="meta">
+    <span>발표일: 2026. 4. 10 (금)</span>
+    <span>Q&A 시간: 25분</span>
+    <span>예상 질문 수: 7~8개</span>
+    <span>총 대비 질문: 32개</span>
+  </div>
+</div>
+
+<!-- ═══════════ STRATEGY ═══════════ -->
+<div class="strategy">
+  <h3>Q&A 시간 관리 전략</h3>
+  <p>
+    <strong>25분 / 질문당 ~3분</strong> = 7~8개 질문 예상.
+    Tier 1 질문이 80% 확률로 출제됩니다. <strong>Tier 1 (6개)을 완벽히 숙지</strong>하는 것이 핵심입니다.<br>
+    답변은 <strong>핵심 30초 + 상세 1분</strong> 구조로. 길어지면 "추가 상세는 서면으로 드리겠습니다."
+  </p>
+</div>
+
+<!-- ═══════════ TOC ═══════════ -->
+<div class="toc">
+  <h3>목차</h3>
+  <div class="toc-grid">
+    <a href="#tier1">Tier 1: 거의 확실한 질문 <span class="count">(6개, 2분 답변)</span></a>
+    <a href="#tier2">Tier 2: 가능성 높은 질문 <span class="count">(8개, 1분 답변)</span></a>
+    <a href="#tier3">Tier 3: 심화 기술 질문 <span class="count">(8개, 핵심 답변)</span></a>
+    <a href="#tier4">Tier 4: 평가항목 특화 질문 <span class="count">(6개)</span></a>
+    <a href="#tier5">Tier 5: 도전적 질문 <span class="count">(4개)</span></a>
+    <a href="#crisis">위기 대응 매뉴얼</a>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- TIER 1 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="tier" id="tier1">
+  <div class="tier-header" style="background: linear-gradient(135deg, var(--red), #b71c1c);">
+    Tier 1: 거의 확실한 질문
+    <span class="tier-badge">6개 | 2분 답변 준비 | 출제확률 80%+</span>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--red);">1</span><span class="qa-q-text">왜 LightGBM을 선택했나요? LSTM이나 Transformer는 검토하지 않았나요?</span><span class="qa-tags"><span class="qa-tag hot">빈출</span><span class="qa-tag tech">기술</span></span></div>
+    <div class="qa-a">
+      <div class="key-point">
+        <strong>핵심 답변 (30초):</strong> LSTM도 검토했으나, 학습 속도, 해석 가능성, 정확도 세 측면에서 LightGBM이 현장에 더 적합했습니다. 실제로 RMSE 0.012mm를 달성하여 목표를 초과했습니다.
+      </div>
+      <strong>상세 답변:</strong><br><br>
+      <strong>1) 학습 속도:</strong> 수천만 건 데이터에서 LSTM은 수 시간, LightGBM은 70초. 현장 서버(GPU 없음)의 자원 제약을 고려하면 실용적 선택입니다.<br><br>
+      <strong>2) 해석 가능성 (Explainability):</strong> Tree 기반 모델은 Feature Importance를 직관적으로 제공합니다. 현장 엔지니어가 "어떤 변수가 품질에 영향을 미치는지" 바로 파악할 수 있습니다. 딥러닝은 블랙박스 성격이 강합니다.<br><br>
+      <strong>3) 정확도:</strong> RMSE 0.012mm로 목표(0.015mm)를 20% 초과 달성. 이 정확도에서 딥러닝의 추가 복잡도를 정당화할 근거가 부족했습니다.<br><br>
+      <div class="warning-point">
+        <strong>보완 포인트:</strong> H100 학습 패키지를 별도 준비하여 향후 대규모 딥러닝 실험 가능성은 열어두었습니다. (ver24_h100.py, Parquet 기반)
+      </div>
+      <table>
+        <tr><th>모델</th><th>학습시간</th><th>해석성</th><th>RMSE</th><th>현장 적합성</th></tr>
+        <tr><td>Linear Reg.</td><td>수초</td><td>높음</td><td>2.4941mm</td><td>부족</td></tr>
+        <tr><td><strong>LightGBM</strong></td><td><strong>70초</strong></td><td><strong>높음</strong></td><td><strong>0.012mm</strong></td><td><strong>최적</strong></td></tr>
+        <tr><td>LSTM</td><td>수시간</td><td>낮음</td><td>미측정</td><td>자원 부족</td></tr>
+        <tr><td>Transformer</td><td>수시간+</td><td>낮음</td><td>미측정</td><td>과도</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--red);">2</span><span class="qa-q-text">RMSE 0.012mm는 어떻게 달성했나요? 검증 방법은?</span><span class="qa-tags"><span class="qa-tag hot">빈출</span><span class="qa-tag tech">기술</span></span></div>
+    <div class="qa-a">
+      <div class="key-point">
+        <strong>핵심 답변:</strong> 피처 엔지니어링(51개), Data Leakage 방지, 하이퍼파라미터 튜닝의 조합. Time Series Split으로 검증.
+      </div>
+      <strong>1) 피처 엔지니어링:</strong><br>
+      원본 42개 센서 → VIF + Feature Importance 기반 28개 정제 → 시간(3), 날씨(8), 교대(3), 주말(2), 강종(5), 원자재(1) 파생 = <strong>총 51개 피처</strong>.<br><br>
+      <strong>2) Data Leakage 방지:</strong><br>
+      THK_CAL 계산에 직접 사용되는 <code>DB230_REAL8</code>(짝수패스 두께보정), <code>DB230_REAL64</code>(입측두께)를 의도적으로 제외. 포함하면 RMSE가 극단적으로 낮지만 실운영에서는 미래정보 참조가 됩니다.<br><br>
+      <strong>3) 하이퍼파라미터:</strong>
+      <table>
+        <tr><th>파라미터</th><th>값</th><th>의미</th></tr>
+        <tr><td>learning_rate</td><td>0.1</td><td>학습률</td></tr>
+        <tr><td>max_depth</td><td>16</td><td>트리 최대 깊이</td></tr>
+        <tr><td>num_leaves</td><td>144</td><td>리프 노드 수</td></tr>
+        <tr><td>feature_fraction</td><td>0.9</td><td>Feature 샘플링</td></tr>
+        <tr><td>bagging_fraction</td><td>0.7</td><td>데이터 샘플링</td></tr>
+        <tr><td>early_stopping</td><td>100 rounds</td><td>과적합 방지</td></tr>
+      </table>
+      <strong>4) 검증:</strong> Time Series Split 적용 (75:25 분할). 미래 데이터 유입 방지.<br>
+      <strong>5) 비교:</strong> MAE 0.3063mm — Linear Regression 2.4941mm 대비 <strong>87% 개선</strong>.
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--red);">3</span><span class="qa-q-text">실시간 추론 20마이크로초는 어떻게 가능한가요?</span><span class="qa-tags"><span class="qa-tag hot">빈출</span><span class="qa-tag tech">기술</span></span></div>
+    <div class="qa-a">
+      <div class="key-point">
+        <strong>핵심 답변:</strong> LightGBM 모델을 ONNX 포맷으로 변환하여 ONNX Runtime의 C++ 기반 최적화 추론 엔진을 활용한 결과입니다.
+      </div>
+      <table>
+        <tr><th>모델</th><th>포맷</th><th>크기</th><th>추론시간</th><th>비율</th></tr>
+        <tr><td>PSM v3</td><td>joblib (sklearn)</td><td>12MB</td><td>~696μs</td><td>1x</td></tr>
+        <tr><td><strong>ONNX v24</strong></td><td><strong>ONNX</strong></td><td><strong>1.9MB</strong></td><td><strong>~20μs</strong></td><td><strong>34x</strong></td></tr>
+      </table>
+      <strong>변환 과정:</strong> <code>skl2onnx</code> 라이브러리로 LightGBM → ONNX 변환. 입력 피처 50개의 float 타입을 명시. 변환 시 정확도 손실 없음.<br><br>
+      <strong>왜 빨라지나:</strong><br>
+      <ul>
+        <li>scikit-learn API 호출의 Python 오버헤드 제거</li>
+        <li>ONNX Runtime의 C++ 엔진 → 메모리 레이아웃 최적화, SIMD 활용</li>
+        <li>batch inference 자동 최적화 내장</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--red);">4</span><span class="qa-q-text">데이터 파이프라인 아키텍처를 좀 더 설명해주세요.</span><span class="qa-tags"><span class="qa-tag hot">빈출</span><span class="qa-tag tech">기술</span></span></div>
+    <div class="qa-a">
+      <div class="key-point">
+        <strong>핵심 답변:</strong> Machbase → Kafka(3 Broker) → ClickHouse(4단계 자동화) → 3개 앱. 핵심은 Materialized Columns로 전처리 88% 절감.
+      </div>
+      <strong>4계층 상세:</strong><br><br>
+      <strong>1) 데이터 소스:</strong> Machbase(THICK 2초/OTHER 5초) + Oracle MES(코일등급) + 기상청(1시간) + PostgreSQL ICS<br><br>
+      <strong>2) Kafka 클러스터:</strong><br>
+      <ul>
+        <li>3 Broker (9092, 9093, 9094) / Confluent 7.5.0</li>
+        <li>THICK 24파티션, OTHER 12파티션, DLQ 6파티션</li>
+        <li>복제팩터 3, Min ISR 2 → 2개 브로커 장애까지 유실 없음</li>
+        <li>LZ4 압축, 7일 보관, Python Producer가 LZ4+JSON 직렬화</li>
+      </ul>
+      <strong>3) ClickHouse 4단계:</strong><br>
+      <ul>
+        <li><strong>Kafka Engine</strong> (consumer 6개): Kafka 메시지 자동 소비</li>
+        <li><strong>Buffer Engine</strong> (16 layer, 10~60초): 쓰기 최적화</li>
+        <li><strong>Materialized View</strong>: JSON → 스키마 변환</li>
+        <li><strong>MergeTree</strong> (월별 파티션): 최종 저장</li>
+      </ul>
+      <strong>4) Materialized Columns 핵심:</strong><br>
+      INSERT 시점에 SQL 표현식 실행 → 결측치(ifNull), 스케일링, 압하율, 장력비, 속도변동률 자동 생성. Python에서 처리할 필요 없음 → <strong>600초 → 70초 (88% 절감)</strong>.
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--red);">5</span><span class="qa-q-text">Data Leakage는 어떻게 방지했나요?</span><span class="qa-tags"><span class="qa-tag hot">빈출</span><span class="qa-tag tech">기술</span></span></div>
+    <div class="qa-a">
+      <div class="key-point">
+        <strong>핵심 답변:</strong> 타겟(THK_CAL)을 계산하는 데 직접 사용되는 DB230_REAL8, DB230_REAL64를 의도적으로 학습에서 제외했습니다.
+      </div>
+      <strong>제외 변수:</strong><br>
+      <ul>
+        <li><code>DB230_REAL8</code> — 짝수 패스 두께 보정값 (THK_CAL 계산에 직접 사용)</li>
+        <li><code>DB230_REAL64</code> — 입측 두께 기준값 (THK_CAL 계산에 직접 사용)</li>
+      </ul>
+      이 변수들을 포함하면 RMSE가 극단적으로 낮아지지만, 실제 운용에서는 미래 정보를 참조하는 것이 됩니다.<br><br>
+      <strong>추가 방지 조치:</strong><br>
+      <ul>
+        <li>VIF(분산팽창계수) > 10인 변수 14개 추가 제거 (다중공선성)</li>
+        <li>Time Series Split으로 미래 데이터 학습 유입 방지</li>
+        <li>Early Stopping 100라운드로 과적합 통제</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--red);">6</span><span class="qa-q-text">Director App의 유사코일 매칭 알고리즘을 상세히 설명해주세요.</span><span class="qa-tags"><span class="qa-tag hot">빈출</span><span class="qa-tag tech">기술</span></span></div>
+    <div class="qa-a">
+      <div class="key-point">
+        <strong>핵심 답변:</strong> 5가지 가중 유사도 점수로 ClickHouse에서 유사 코일 Top 5를 실시간 매칭합니다.
+      </div>
+      <strong>유사도 공식:</strong><br>
+      <code>Score = 0.35×강종 + 0.30×두께 + 0.15×패스수 + 0.10×최근성 + 0.10×품질점수</code><br><br>
+      <table>
+        <tr><th>요소</th><th>가중치</th><th>계산 방식</th></tr>
+        <tr><td>강종 유사도</td><td>35%</td><td>동일 강종 = 1.0, 다르면 0.0</td></tr>
+        <tr><td>두께 유사도</td><td>30%</td><td>1 - |목표두께 차이| / 허용오차(0.3mm)</td></tr>
+        <tr><td>패스 수 유사도</td><td>15%</td><td>1 - |패스 수 차이| / 최대 차이</td></tr>
+        <tr><td>최근성</td><td>10%</td><td>exp(-생산일수 / 30) → 최근 코일 우선</td></tr>
+        <tr><td>품질 점수</td><td>10%</td><td>과거 성공률 / 100</td></tr>
+      </table>
+      <strong>운영 파라미터:</strong> 최근 90일 내 코일 대상 | Top 5 선택 | 5분간 캐시 | 두께 허용오차 0.3mm<br><br>
+      <strong>후속 처리:</strong><br>
+      매칭된 코일의 패스별 파라미터(평균, p10, p90)를 참조값으로 추출 → 현재 값과 Gap 분석 → 신호등(GREEN/YELLOW/RED) → P(개선)/P(유지)/P(악화) 확률 → 작업자 적용/무시 → 30초 후 자동 결과 평가
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- TIER 2 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="tier" id="tier2">
+  <div class="tier-header" style="background: linear-gradient(135deg, var(--orange), #e65100);">
+    Tier 2: 가능성 높은 질문
+    <span class="tier-badge">8개 | 1분 답변 | 출제확률 40~60%</span>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--orange);">7</span><span class="qa-q-text">PSM v3와 ONNX v24의 차이는? 왜 두 모델을 동시에 운영하나요?</span><span class="qa-tags"><span class="qa-tag tech">기술</span></span></div>
+    <div class="qa-a">
+      <table>
+        <tr><th>항목</th><th>PSM v3</th><th>ONNX v24</th></tr>
+        <tr><td>피처 수</td><td>22개 (물리 기반)</td><td>50개 (센서+날씨+시간)</td></tr>
+        <tr><td>관점</td><td>Pass-aware, 강종별</td><td>데이터 중심, 통계적</td></tr>
+        <tr><td>추론 속도</td><td>~696μs</td><td>~20μs</td></tr>
+        <tr><td>모델 크기</td><td>12MB (joblib)</td><td>1.9MB (ONNX)</td></tr>
+        <tr><td>강종 지원</td><td>SC강/일반강/SK강 3종</td><td>전체 (one-hot)</td></tr>
+      </table>
+      <strong>듀얼 운영 이유:</strong> 관점이 다르므로 상호 검증 가능. 한 모델 장애 시 다른 모델로 서비스 지속 = <strong>정확도 + 가용성</strong> 모두 확보.
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--orange);">8</span><span class="qa-q-text">6.3B 데이터 마이그레이션은 어떻게 했나요?</span><span class="qa-tags"><span class="qa-tag tech">기술</span></span></div>
+    <div class="qa-a">
+      Machbase → ClickHouse 배치 마이그레이션. 5번의 Task로 분할 진행.<br><br>
+      <strong>최적화:</strong> 워커 4→6개, 배치 크기 1K→3K, ORDER BY 제거 → 처리속도 2배 향상.<br>
+      <table>
+        <tr><th>Task</th><th>대상</th><th>건수</th><th>소요시간</th></tr>
+        <tr><td>Task 07</td><td>THICK (2025-01~10)</td><td>5.15억건</td><td>~48h</td></tr>
+        <tr><td>Task 08</td><td>OTHER (2025-01~12)</td><td>2,900만건</td><td>62.4h</td></tr>
+      </table>
+      <strong>성공률 100%.</strong> 체크포인트 기반 재시작으로 장애 시에도 중단점부터 재개.
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--orange);">9</span><span class="qa-q-text">1CRM, 3CRM에도 적용 가능한가요?</span><span class="qa-tags"><span class="qa-tag biz">비즈니스</span></span></div>
+    <div class="qa-a">
+      <strong>네, 동일 아키텍처로 즉시 적용 가능합니다.</strong><br><br>
+      <strong>변경 사항:</strong> 센서태그 매핑 (DK_2CR_* → DK_1CR_* 또는 DK_3CR_*) + 모델 재학습<br>
+      <strong>유지 사항:</strong> 데이터 파이프라인 구조, 3개 앱 UI, Kafka/ClickHouse 인프라 전체<br><br>
+      <strong>고려 사항:</strong> CRM별 데이터 특성 차이 분석, Feature Importance 재분석, 하이퍼파라미터 튜닝 필요. 하지만 파이프라인 90%는 그대로 재활용 가능.
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--orange);">10</span><span class="qa-q-text">알림 엔진의 오탐율은 어떻게 관리하나요?</span><span class="qa-tags"><span class="qa-tag tech">기술</span></span></div>
+    <div class="qa-a">
+      <ul>
+        <li><strong>1분 쿨다운:</strong> 동일 규칙 중복 알림 방지 메커니즘</li>
+        <li><strong>적응형 감지:</strong> Rolling Window 1,000건의 평균/표준편차 기반 (3σ rule) → 현재 운영 상태에 자동 적응</li>
+        <li><strong>임계값 조정:</strong> <code>config.py</code>에서 규칙별 임계값 수정 가능</li>
+        <li><strong>심각도 분리:</strong> Warning/Critical 2단계로 불필요한 Critical 알림 최소화</li>
+        <li><strong>현장 피드백 루프:</strong> 운영 중 피드백을 반영하여 지속 최적화</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--orange);">11</span><span class="qa-q-text">모델 드리프트는 어떻게 대응하나요?</span><span class="qa-tags"><span class="qa-tag tech">기술</span></span></div>
+    <div class="qa-a">
+      <ul>
+        <li><strong>재학습 주기:</strong> 월 1회 권장 (ver24 학습시간 70초 → 빈번 재학습 부담 없음)</li>
+        <li><strong>모니터링:</strong> 대시보드 RMSE 추이 실시간 확인</li>
+        <li><strong>자동화 계획:</strong> 2026 H2에 크론잡 기반 자동 재학습 스케줄링 구축 예정</li>
+        <li><strong>감지 지표:</strong> 예측 오차 분포의 평균/분산 변화를 모니터링하여 드리프트 감지</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--orange);">12</span><span class="qa-q-text">Materialized Columns의 원리와 88% 절감은?</span><span class="qa-tags"><span class="qa-tag tech">기술</span></span></div>
+    <div class="qa-a">
+      ClickHouse의 Materialized Columns는 <strong>INSERT 시점에 SQL 표현식을 자동 실행</strong>하여 파생 컬럼을 생성합니다.<br><br>
+      <strong>자동 처리 항목:</strong><br>
+      <ul>
+        <li>결측치 처리: <code>ifNull(column, default)</code></li>
+        <li>스케일링: 표준화 연산</li>
+        <li>파생 변수: 압하율, 장력비, 속도 변동률</li>
+      </ul>
+      <strong>효과:</strong> Python 오버헤드(데이터 로딩, pandas 변환, GC)를 ClickHouse C++ 엔진으로 대체.<br>
+      <strong>결과:</strong> ver21(600초) → ver24(70초) = <strong>88% 절감</strong>.
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--orange);">13</span><span class="qa-q-text">Director App의 Good-case Follow 개념을 쉽게 설명해주세요.</span><span class="qa-tags"><span class="qa-tag biz">비즈니스</span></span></div>
+    <div class="qa-a">
+      <div class="key-point">
+        <strong>한 줄 요약:</strong> "과거에 성공한 유사 코일의 작업 방법을 참조하여 현재 작업을 가이드하는 시스템"
+      </div>
+      <strong>비유:</strong> 의사가 유사 환자의 성공적인 치료 사례를 참고하는 것과 같습니다.<br><br>
+      <strong>작동 과정:</strong><br>
+      1. 새 코일 투입 시 → ClickHouse에서 유사한 과거 코일 5개 자동 검색<br>
+      2. 성공한 코일들의 작업 파라미터(속도, 장력, 압연력 등) 추출<br>
+      3. 현재 파라미터와 비교 → 차이가 크면 신호등(적/황) 경고<br>
+      4. 조정 추천과 함께 "이렇게 바꾸면 개선될 확률 75%" 표시<br>
+      5. 작업자가 적용 → 30초 후 실제로 개선되었는지 자동 평가<br>
+      6. 결과 축적 → 다음 매칭 정확도 향상 (선순환)<br><br>
+      <strong>핵심:</strong> 블랙박스 AI가 아닌, <strong>과거 실제 성공 경험에 기반한 투명한 의사결정 지원</strong>.
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--orange);">14</span><span class="qa-q-text">3개 앱의 사용자 반응은 어떤가요?</span><span class="qa-tags"><span class="qa-tag biz">비즈니스</span></span></div>
+    <div class="qa-a">
+      현재 프로토타입 운영 단계이며, 2026 H2에 본격적인 사용자 교육과 피드백 수집을 계획하고 있습니다.<br><br>
+      <strong>사용성 확보 노력:</strong><br>
+      <ul>
+        <li>한글 UI 전면 적용</li>
+        <li>색상 코딩 (녹/황/적)으로 직관적 상태 표시</li>
+        <li>신호등 가이드 — 별도 교육 없이 이해 가능</li>
+        <li>인터랙티브 차트 (줌, 툴팁, 필터)</li>
+        <li>Mockup 시나리오 6종으로 데모/교육 지원</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- TIER 3 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="tier" id="tier3">
+  <div class="tier-header" style="background: linear-gradient(135deg, var(--blue), #1557b0);">
+    Tier 3: 심화 기술 질문
+    <span class="tier-badge">8개 | 핵심 답변 | 출제확률 20~40%</span>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--blue);">15</span><span class="qa-q-text">Feature Engineering 51개 변수 상세 구성?</span><span class="qa-tags"><span class="qa-tag tech">기술</span></span></div>
+    <div class="qa-a">
+      <table>
+        <tr><th>카테고리</th><th>개수</th><th>상세</th></tr>
+        <tr><td>센서 태그</td><td>28</td><td>DB230(6), DB501(10), DB1010(2), DB1030(1), DB540(1), N2_AGC(1), N2_CPU2(6), N2_CPU3(1)</td></tr>
+        <tr><td>시간 파생</td><td>3</td><td>OTIME_YEAR, OTIME_MONTH, OTIME_DATE</td></tr>
+        <tr><td>기상 데이터</td><td>8</td><td>기온, 강수, 풍속, 습도, 기압, 일조, 적설, 지면온도</td></tr>
+        <tr><td>교대 구분</td><td>3</td><td>MORNING, EVENING, NIGHT (One-hot)</td></tr>
+        <tr><td>주말 구분</td><td>2</td><td>WEEKEND__0, WEEKEND__1 (One-hot)</td></tr>
+        <tr><td>강종 인코딩</td><td>5</td><td>PURCOM_ID 상위 5개 One-hot</td></tr>
+        <tr><td>원자재 규격</td><td>1</td><td>RAWSPC_ID (Target Encoding)</td></tr>
+        <tr><td><strong>합계</strong></td><td><strong>51</strong></td><td></td></tr>
+      </table>
+      <strong>선별 과정:</strong> 원본 42개 센서 → VIF > 10 제거 (다중공선성) + Feature Importance 하위 제거 + Data Leakage 변수 제거 = 28개
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--blue);">16</span><span class="qa-q-text">ClickHouse를 선택한 이유? TimescaleDB나 InfluxDB와 비교하면?</span><span class="qa-tags"><span class="qa-tag tech">기술</span></span></div>
+    <div class="qa-a">
+      <table>
+        <tr><th>항목</th><th>ClickHouse</th><th>TimescaleDB</th><th>InfluxDB</th></tr>
+        <tr><td>엔진</td><td>컬럼 기반 OLAP</td><td>행 기반 (PostgreSQL)</td><td>시계열 특화</td></tr>
+        <tr><td>집계 쿼리</td><td><strong>10x+ 빠름</strong></td><td>보통</td><td>보통</td></tr>
+        <tr><td>Materialized Columns</td><td><strong>지원</strong></td><td>미지원</td><td>미지원</td></tr>
+        <tr><td>Kafka Engine</td><td><strong>네이티브 통합</strong></td><td>별도 설정</td><td>별도 설정</td></tr>
+        <tr><td>수억건 분석</td><td><strong>초~분 단위</strong></td><td>분~시간</td><td>분~시간</td></tr>
+      </table>
+      <strong>결정적 이유:</strong> Kafka Engine 네이티브 통합 + Materialized Columns = 전처리 자동화 + 집계 쿼리 속도.
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--blue);">17</span><span class="qa-q-text">Kafka 파티션 전략과 고가용성은?</span><span class="qa-tags"><span class="qa-tag tech">기술</span></span></div>
+    <div class="qa-a">
+      <ul>
+        <li><strong>THICK 토픽:</strong> 24파티션 (2초 주기 고빈도 → 처리량 확보)</li>
+        <li><strong>OTHER 토픽:</strong> 12파티션 (5초 주기)</li>
+        <li><strong>DLQ 토픽:</strong> 6파티션 (실패 메시지 30일 보관)</li>
+        <li><strong>복제팩터:</strong> 3 (모든 데이터 3벌 복사)</li>
+        <li><strong>Min ISR:</strong> 2 → 2개 브로커 장애까지 데이터 유실 없이 운영</li>
+        <li><strong>압축:</strong> LZ4 (빠른 압축/해제)</li>
+        <li><strong>보관:</strong> 7일 (DLQ만 30일)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--blue);">18</span><span class="qa-q-text">ONNX 변환 과정과 호환성은?</span><span class="qa-tags"><span class="qa-tag tech">기술</span></span></div>
+    <div class="qa-a">
+      <code>skl2onnx</code>로 LightGBM → ONNX 포맷 변환. 입력 피처 50개의 float32 타입 명시. ONNX Runtime의 <code>InferenceSession</code>으로 로드.<br><br>
+      <strong>정확도 손실:</strong> 없음 (동일한 수학적 연산, 표현 포맷만 변경)<br>
+      <strong>호환성:</strong> ONNX는 산업 표준 포맷으로 Python, C++, Java, C# 등 다양한 런타임에서 사용 가능.
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--blue);">19</span><span class="qa-q-text">WebSocket 스케일링 전략?</span><span class="qa-tags"><span class="qa-tag tech">기술</span></span></div>
+    <div class="qa-a">
+      현재 <code>ConnectionManager</code> 클래스로 단일 서버 관리. 수십 대 동시접속까지 문제 없음.<br><br>
+      <strong>스케일아웃 계획:</strong> 대규모 접속 시 Redis Pub/Sub 기반 멀티서버 브로드캐스트로 확장.<br>
+      <strong>현재 최적화:</strong> <code>asyncio.run_coroutine_threadsafe</code>로 스레드-비동기 브리징, 데이터 버퍼(150ms 간격)로 UI 끊김 방지.
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--blue);">20</span><span class="qa-q-text">Director App의 확률 엔진은 어떻게 동작하나요?</span><span class="qa-tags"><span class="qa-tag tech">기술</span></span></div>
+    <div class="qa-a">
+      <strong>두 가지 접근 방식:</strong><br><br>
+      <strong>1) 통계적 방법 (충분한 데이터 시):</strong><br>
+      <ul>
+        <li>Group A: 추천값 근처에서 운영한 코일들 (유사도 > 0.7)</li>
+        <li>Group B: 현재값 근처에서 운영한 코일들 (유사도 > 0.4)</li>
+        <li>P(개선) = P(Group_A_편차 < Group_B_편차)</li>
+        <li>최소 3코일 이상 필요</li>
+      </ul>
+      <strong>2) 휴리스틱 방법 (데이터 부족 시):</strong><br>
+      참조 평균까지의 거리 기반으로 확률 추정.<br><br>
+      <strong>결과 평가:</strong> 적용 후 30초 뒤 편차 변화율 측정 → ±10% 기준으로 IMPROVED/NO_CHANGE/WORSENED 판정.
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--blue);">21</span><span class="qa-q-text">보안은 어떻게 처리하나요? 데이터 접근 제어는?</span><span class="qa-tags"><span class="qa-tag tech">기술</span></span></div>
+    <div class="qa-a">
+      <ul>
+        <li><strong>네트워크:</strong> 사내 망 운영 (211.232.137.203), 외부 접근 차단</li>
+        <li><strong>DB 접근:</strong> ClickHouse crm_admin 계정 사용, 환경변수로 자격증명 관리</li>
+        <li><strong>Nginx:</strong> 리버스 프록시로 백엔드 포트 직접 노출 방지</li>
+        <li><strong>Kafka:</strong> 내부 브로커 간 통신만 허용</li>
+        <li><strong>향후:</strong> API 인증 토큰, 사용자 역할 기반 접근 제어 추가 계획</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--blue);">22</span><span class="qa-q-text">시스템 장애 시 복구 전략은?</span><span class="qa-tags"><span class="qa-tag tech">기술</span></span></div>
+    <div class="qa-a">
+      <ul>
+        <li><strong>Kafka:</strong> 복제팩터 3, Min ISR 2 → 2개 브로커 장애까지 데이터 무손실</li>
+        <li><strong>ClickHouse:</strong> 월별 파티션 → 장애 시 해당 파티션만 복구</li>
+        <li><strong>앱 서비스:</strong> Systemd 자동 재시작 (restart=always, 지수 백오프)</li>
+        <li><strong>WebSocket:</strong> 자동 재접속 (1초 딜레이)</li>
+        <li><strong>Kafka Consumer:</strong> 체크포인트 기반 재시작 → 마지막 처리 시점부터 재개</li>
+        <li><strong>Producer:</strong> 체크포인트 저장 → 장애 후 중단점부터 재개</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- TIER 4 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="tier" id="tier4">
+  <div class="tier-header" style="background: linear-gradient(135deg, var(--green), #2e7d32);">
+    Tier 4: 평가항목 특화 질문
+    <span class="tier-badge">6개 | 비즈니스 + 전략</span>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--green);">23</span><span class="qa-q-text">시장 규모와 경쟁 현황은?</span><span class="qa-tags"><span class="qa-tag biz">비즈니스</span></span></div>
+    <div class="qa-a">
+      <ul>
+        <li><strong>국내:</strong> 냉간압연 공장 30+개소 (POSCO, 현대제철, 동국제강 등)</li>
+        <li><strong>글로벌:</strong> 스마트 제조 시장 연 15%+ 성장</li>
+        <li><strong>경쟁 우위:</strong> 도메인 특화 AI (범용 솔루션과 차별화), 실제 운영 데이터 6.3B+ 검증, 3개 앱 풀 스위트</li>
+        <li><strong>진입 장벽:</strong> 철강 공정 도메인 지식 + 대규모 실 데이터 확보가 핵심 → 후발 주자의 진입 어려움</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--green);">24</span><span class="qa-q-text">매출 전망과 수익 모델은?</span><span class="qa-tags"><span class="qa-tag biz">비즈니스</span></span></div>
+    <div class="qa-a">
+      <strong>3단계 수익 모델:</strong><br>
+      <ul>
+        <li><strong>Phase 1 (내부):</strong> 비용 절감 효과로 ROI 확인 (불량 감소, 생산성 향상)</li>
+        <li><strong>Phase 2 (타사):</strong> 라이선스 + 커스터마이징 서비스 매출</li>
+        <li><strong>Phase 3 (SaaS):</strong> 월/연 구독형 서비스 매출</li>
+      </ul>
+      구체적 매출 전망은 Phase 1 내부 운영 결과를 기반으로 산정 예정입니다. 불량률 1% 감소만으로도 연간 수억원의 비용 절감 효과가 기대됩니다.
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--green);">25</span><span class="qa-q-text">정량적 생산 개선 수치를 좀 더 구체적으로?</span><span class="qa-tags"><span class="qa-tag biz">비즈니스</span></span></div>
+    <div class="qa-a">
+      <table>
+        <tr><th>지표</th><th>현재/기대</th><th>근거</th></tr>
+        <tr><td>두께 예측 RMSE</td><td><strong>0.012mm (달성)</strong></td><td>LightGBM + 51피처</td></tr>
+        <tr><td>전처리 부하</td><td><strong>88% 절감 (달성)</strong></td><td>Materialized Columns</td></tr>
+        <tr><td>설비 과부하</td><td>80% 감소 (기대)</td><td>알림엔진 + 파라미터 추천</td></tr>
+        <tr><td>Load Balance</td><td>22% 향상 (기대)</td><td>PSM 최적화 (75→92점)</td></tr>
+        <tr><td>압연 시간</td><td>15% 단축 (기대)</td><td>Good-case Follow (15.5→13.2분)</td></tr>
+        <tr><td>MAE</td><td><strong>87% 개선 (달성)</strong></td><td>LR 2.49mm → LGBM 0.31mm</td></tr>
+      </table>
+      <div class="warning-point">
+        "달성"은 이미 검증 완료, "기대"는 본격 운영 후 검증 예정입니다.
+      </div>
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--green);">26</span><span class="qa-q-text">논문/특허 계획은?</span><span class="qa-tags"><span class="qa-tag biz">비즈니스</span></span></div>
+    <div class="qa-a">
+      <strong>특허 후보 (2028년 이후):</strong><br>
+      <ul>
+        <li>유사코일 매칭 기반 Good-case Follow 알고리즘</li>
+        <li>Materialized Columns 기반 실시간 전처리 파이프라인</li>
+        <li>듀얼 모델(물리+데이터) 동시 운영 아키텍처</li>
+      </ul>
+      <strong>논문 후보:</strong><br>
+      <ul>
+        <li>냉간압연 두께 예측 AI 시스템 구축 사례 및 성능 분석</li>
+        <li>ClickHouse Materialized Columns를 활용한 실시간 전처리 최적화</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--green);">27</span><span class="qa-q-text">프로젝트 수행 중 가장 어려웠던 점은?</span><span class="qa-tags"><span class="qa-tag biz">비즈니스</span></span></div>
+    <div class="qa-a">
+      <strong>1) 대용량 데이터 마이그레이션:</strong> 9.6억 건을 Machbase→ClickHouse로 이관하는 과정에서 워커 수, 배치 크기, 쿼리 최적화를 반복 실험. 5번의 Task를 거쳐 최적 설정 도출.<br><br>
+      <strong>2) Data Leakage 식별:</strong> 초기에 극단적으로 낮은 RMSE가 나와 의심 → DB230_REAL8, REAL64가 타겟 계산에 직접 관여한다는 것을 발견하고 제외. 도메인 지식과 통계 분석의 결합이 필요했음.<br><br>
+      <strong>3) 실시간 파이프라인 안정화:</strong> Kafka-ClickHouse 간 데이터 유실 없는 파이프라인 구축. Buffer Engine 설정, 파티션 전략 최적화에 시행착오.
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--green);">28</span><span class="qa-q-text">이 시스템의 차별점은 무엇인가요?</span><span class="qa-tags"><span class="qa-tag biz">비즈니스</span></span></div>
+    <div class="qa-a">
+      <div class="key-point">
+        <strong>3가지 핵심 차별점:</strong>
+      </div>
+      <strong>1) 배치 + 실시간 + 의사결정 3단계 통합:</strong> 단순 예측이 아닌, 분석(Batch) → 감시(Realtime) → 가이드(Director)의 전체 사이클을 하나의 시스템으로 구현.<br><br>
+      <strong>2) Good-case Follow 방식:</strong> 블랙박스 AI가 아닌, 과거 실제 성공 사례 기반 투명한 의사결정 지원. 작업자가 "왜" 이런 추천을 받는지 이해 가능.<br><br>
+      <strong>3) 6.3B+ 실데이터 검증:</strong> 실험실 데이터가 아닌 실제 생산 데이터로 검증. 현장 적용 가능성이 이미 입증됨.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- TIER 5 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="tier" id="tier5">
+  <div class="tier-header" style="background: linear-gradient(135deg, var(--navy), #16213e);">
+    Tier 5: 도전적 질문 (압박 질문)
+    <span class="tier-badge">4개 | 침착하게 대응</span>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--navy);">29</span><span class="qa-q-text">RMSE 0.012mm가 실제 현장에서 의미 있는 수준인가요?</span><span class="qa-tags"><span class="qa-tag hot">압박</span></span></div>
+    <div class="qa-a">
+      <div class="key-point">
+        <strong>답변 전략:</strong> 겸손하되 자신감 있게. 수치 자체보다 "활용 가치"에 초점.
+      </div>
+      네, 의미 있는 수준입니다. 냉간압연의 두께 허용 오차는 일반적으로 ±0.01~0.05mm이며, RMSE 0.012mm는 이 범위 내에서 높은 정확도입니다.<br><br>
+      <strong>비교:</strong> Linear Regression MAE 2.49mm → LightGBM MAE 0.31mm로 <strong>87% 개선</strong>. 이는 현장에서 "사후 측정" 없이도 품질 이탈을 사전에 감지할 수 있는 수준입니다.<br><br>
+      물론 모델 정확도 향상은 지속적으로 추진하며, 특히 PSM(Pass Schedule Management) 최적화와 함께 실질적 품질 개선 효과를 높여 나갈 계획입니다.
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--navy);">30</span><span class="qa-q-text">현장 작업자가 AI 추천을 실제로 따를까요? 저항은 없나요?</span><span class="qa-tags"><span class="qa-tag hot">압박</span></span></div>
+    <div class="qa-a">
+      <div class="key-point">
+        <strong>답변 전략:</strong> 솔직하게 인정 + 대응 방안 제시.
+      </div>
+      매우 중요한 지적입니다. 현장 저항은 모든 AI 도입의 공통 과제입니다.<br><br>
+      <strong>저희의 대응:</strong><br>
+      <ul>
+        <li><strong>강제가 아닌 추천:</strong> Director App은 적용/무시 선택권을 작업자에게 부여. 최종 판단은 사람이 합니다.</li>
+        <li><strong>투명한 근거:</strong> "왜" 이 추천이 나왔는지 유사 코일 정보와 확률을 함께 제시. 블랙박스가 아닙니다.</li>
+        <li><strong>점진적 도입:</strong> 2026 H2에 교육부터 시작, 강제 적용이 아닌 참고 도구로 시작합니다.</li>
+        <li><strong>결과 추적:</strong> 추천 적용 결과가 자동 기록되므로, 실제로 효과가 있다는 것을 데이터로 보여줄 수 있습니다.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--navy);">31</span><span class="qa-q-text">기존 MES/Level 2 시스템과의 통합은 어떻게 하나요?</span><span class="qa-tags"><span class="qa-tag hot">압박</span><span class="qa-tag tech">기술</span></span></div>
+    <div class="qa-a">
+      현재는 <strong>독립 시스템으로 운영</strong>하며, 기존 MES/Level 2와 데이터 연동(읽기)만 수행합니다.<br><br>
+      <strong>현재 연동:</strong> Oracle MES에서 코일등급 정보 읽기 / PostgreSQL ICS에서 공정 정보 읽기<br>
+      <strong>향후 계획:</strong> PSM 개발 완료 시 Level 2 시스템에 스케줄 적용 명령 송신 인터페이스 구축 (2025년 3월 목표)<br><br>
+      <strong>전략:</strong> 기존 시스템을 "대체"하는 것이 아니라, "보완"하는 위치. 작업자와 기존 시스템 사이에서 AI 기반 가이드를 제공하는 역할입니다.
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q"><span class="qa-num" style="background:var(--navy);">32</span><span class="qa-q-text">비슷한 솔루션을 가진 경쟁사가 있나요?</span><span class="qa-tags"><span class="qa-tag hot">압박</span><span class="qa-tag biz">비즈니스</span></span></div>
+    <div class="qa-a">
+      대형 철강사(POSCO 등)는 자체 AI 연구를 진행하고 있으나, <strong>3개 앱 통합 + Good-case Follow + 실시간 듀얼 모델</strong>을 하나의 패키지로 제공하는 솔루션은 차별화됩니다.<br><br>
+      <strong>경쟁 우위:</strong><br>
+      <ul>
+        <li>6.3B+ 실 데이터로 검증된 모델 (실험실 수준이 아님)</li>
+        <li>Good-case Follow = 설명 가능한 AI (작업자 수용성 높음)</li>
+        <li>도메인 특화 → 범용 AI 솔루션 대비 정확도와 실용성 우수</li>
+        <li>중소 철강사에게는 자체 개발 대비 비용 효율적</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- CRISIS MANAGEMENT -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="crisis" id="crisis">
+  <h3>위기 대응 매뉴얼</h3>
+
+  <div class="crisis-item">
+    <h4>데모 장애 시</h4>
+    <p>
+      "현재 네트워크 환경에서 접속이 어려울 수 있어 슬라이드로 대체 설명드리겠습니다."<br>
+      → PPT 슬라이드 #10~#12에 각 앱 구조와 기능이 상세 기술됨. 사전에 <strong>스크린샷/녹화 영상</strong>을 백업으로 준비.
+    </p>
+  </div>
+
+  <div class="crisis-item">
+    <h4>모르는 기술 질문</h4>
+    <p>
+      "좋은 질문입니다. 해당 부분은 추가 검토가 필요하며, <strong>확인 후 서면으로 답변드리겠습니다.</strong>"<br>
+      → 모르는 것을 아는 척하지 않기. 솔직함이 신뢰를 줍니다.
+    </p>
+  </div>
+
+  <div class="crisis-item">
+    <h4>비즈니스 수치 압박</h4>
+    <p>
+      "구체적 매출 수치는 Phase 1 내부 운영 결과를 기반으로 산정할 예정입니다. <strong>현재 확인된 것은 기술적 성과</strong>이며, 비즈니스 효과는 실운영 후 검증하겠습니다."
+    </p>
+  </div>
+
+  <div class="crisis-item">
+    <h4>시간 초과 위험</h4>
+    <p>
+      답변이 길어지면: "추가 상세는 <strong>서면으로 드리겠습니다.</strong>"<br>
+      질문이 많으면: "남은 질문은 서면으로 답변드려도 되겠습니까?" (평가위원장에게 확인)
+    </p>
+  </div>
+
+  <div class="crisis-item">
+    <h4>답변 구조 템플릿</h4>
+    <p>
+      <strong>1) 핵심 (30초):</strong> 질문의 직접 답변<br>
+      <strong>2) 근거 (30초):</strong> 수치/사례로 뒷받침<br>
+      <strong>3) 확장 (선택):</strong> 향후 계획으로 연결<br>
+      → 총 1~2분 이내. 절대 3분을 넘기지 않기.
+    </p>
+  </div>
+</div>
+
+</div><!-- container -->
+</body>
+</html>
