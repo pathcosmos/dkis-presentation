@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>연구노트 요약본 — 2CRM 두께 예측 모델 개발 | 2024.01 ~ 2025.11</title>
+<style>
+:root {
+  --ink: #1a1a2e;
+  --ink-light: #3a3a4e;
+  --accent: #1a4a8e;
+  --accent-light: #4a7ab8;
+  --red: #b0282a;
+  --green: #2d6a3a;
+  --gold: #b8860b;
+  --paper: #fdfcf7;
+  --paper-dark: #f5f1e6;
+  --rule: #c9c0a8;
+  --meta: #888;
+  --hl-yellow: #fff8c4;
+  --hl-green: #d5ecd5;
+  --font-serif: 'Noto Serif KR', 'Nanum Myeongjo', 'Times New Roman', serif;
+  --font-sans: 'Pretendard', 'Malgun Gothic', -apple-system, sans-serif;
+  --font-mono: 'Consolas', 'Courier New', monospace;
+}
+
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;800&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-sans);
+  background: #e8e4d4;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.7;
+  padding: 0;
+}
+
+/* ─── Paper-like container ─── */
+.notebook {
+  max-width: 1040px;
+  margin: 0 auto;
+  background: var(--paper);
+  min-height: 100vh;
+  box-shadow: 0 0 40px rgba(0,0,0,0.15);
+  position: relative;
+}
+
+/* ─── Cover page ─── */
+.cover {
+  padding: 80px 72px 60px;
+  border-bottom: 3px double var(--rule);
+  background: linear-gradient(180deg, var(--paper-dark) 0%, var(--paper) 100%);
+  position: relative;
+}
+.cover::before {
+  content: 'RESEARCH NOTEBOOK';
+  position: absolute;
+  top: 24px;
+  left: 72px;
+  font-size: 11px;
+  letter-spacing: 4px;
+  color: var(--meta);
+  font-family: var(--font-mono);
+}
+.cover::after {
+  content: 'CONFIDENTIAL / INTERNAL';
+  position: absolute;
+  top: 24px;
+  right: 72px;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--red);
+  font-family: var(--font-mono);
+  border: 1px solid var(--red);
+  padding: 2px 8px;
+}
+
+.cover h1 {
+  font-family: var(--font-serif);
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1.4;
+  margin-top: 40px;
+  color: var(--ink);
+  letter-spacing: -0.5px;
+}
+.cover .title-en {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  color: var(--meta);
+  margin-top: 12px;
+  font-style: italic;
+}
+
+.cover-meta {
+  margin-top: 48px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 40px;
+  font-size: 14px;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  padding: 20px 0;
+}
+.cover-meta .label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--meta);
+  margin-bottom: 4px;
+}
+.cover-meta .value {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.cover-abstract {
+  margin-top: 32px;
+  padding: 20px 24px;
+  background: var(--paper-dark);
+  border-left: 4px solid var(--accent);
+  font-size: 13.5px;
+  line-height: 1.8;
+  color: var(--ink-light);
+}
+.cover-abstract h4 {
+  font-family: var(--font-serif);
+  font-size: 14px;
+  color: var(--accent);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ─── Section page ─── */
+.page {
+  padding: 60px 72px 50px;
+  border-bottom: 1px solid var(--rule);
+  position: relative;
+}
+.page::before {
+  content: counter(section);
+  counter-increment: section;
+  position: absolute;
+  top: 48px;
+  right: 72px;
+  font-family: var(--font-serif);
+  font-size: 12px;
+  color: var(--meta);
+  letter-spacing: 1px;
+}
+.notebook { counter-reset: section; }
+
+.page-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--meta);
+  letter-spacing: 1.5px;
+  margin-bottom: 6px;
+}
+
+.page h2 {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 6px;
+  letter-spacing: -0.3px;
+}
+.page h2 .period {
+  display: inline-block;
+  font-size: 13px;
+  color: var(--meta);
+  font-weight: 400;
+  font-family: var(--font-mono);
+  margin-left: 12px;
+  vertical-align: middle;
+}
+
+.page h3 {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 28px 0 10px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.page h4 {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 18px 0 6px;
+}
+
+.page p {
+  font-size: 14px;
+  line-height: 1.85;
+  color: var(--ink-light);
+  margin-bottom: 12px;
+  text-align: justify;
+}
+
+.page ul, .page ol {
+  margin: 8px 0 14px 24px;
+  font-size: 13.5px;
+  line-height: 1.85;
+  color: var(--ink-light);
+}
+.page li { margin-bottom: 4px; }
+
+/* ─── Entry (research log) ─── */
+.entry {
+  margin: 16px 0;
+  padding: 14px 18px 14px 22px;
+  background: var(--paper-dark);
+  border-left: 3px solid var(--accent-light);
+  font-size: 13.5px;
+  line-height: 1.8;
+}
+.entry .date {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.entry .note {
+  color: var(--ink-light);
+}
+.entry strong { color: var(--ink); font-weight: 700; }
+
+/* ─── Highlight ─── */
+.hl-yellow {
+  background: var(--hl-yellow);
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+.hl-green {
+  background: var(--hl-green);
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+/* ─── Quarter box ─── */
+.quarter-banner {
+  display: inline-block;
+  padding: 4px 14px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  border-radius: 2px;
+  margin-bottom: 12px;
+}
+.quarter-banner.focus {
+  background: var(--red);
+}
+
+/* ─── Table ─── */
+.page table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0;
+  font-size: 12.5px;
+}
+.page table th {
+  background: var(--paper-dark);
+  padding: 10px 12px;
+  text-align: left;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  border-top: 2px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  color: var(--ink);
+}
+.page table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink-light);
+}
+.page table tr:last-child td { border-bottom: 2px solid var(--ink); }
+
+/* ─── Figure / formula box ─── */
+.figure {
+  margin: 18px 0;
+  padding: 18px 24px;
+  background: white;
+  border: 1px solid var(--rule);
+  font-size: 13px;
+  text-align: center;
+  font-family: var(--font-serif);
+}
+.figure .caption {
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--meta);
+  font-style: italic;
+}
+
+/* ─── Callout ─── */
+.callout {
+  margin: 16px 0;
+  padding: 14px 20px;
+  font-size: 13px;
+  line-height: 1.75;
+}
+.callout.finding {
+  background: #fbf7e6;
+  border: 1px dashed var(--gold);
+  color: #5a4200;
+}
+.callout.decision {
+  background: #edf4ed;
+  border: 1px solid var(--green);
+  color: #1e4028;
+}
+.callout.risk {
+  background: #fbeeee;
+  border: 1px solid var(--red);
+  color: #5a1010;
+}
+.callout .tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 2px 8px;
+  margin-right: 8px;
+  border-radius: 2px;
+}
+.callout.finding .tag { background: var(--gold); color: white; }
+.callout.decision .tag { background: var(--green); color: white; }
+.callout.risk .tag { background: var(--red); color: white; }
+
+/* ─── Signature ─── */
+.signature-block {
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-size: 12px;
+  color: var(--meta);
+  font-family: var(--font-serif);
+}
+.signature-block .sig {
+  border-top: 1px solid var(--ink);
+  padding-top: 4px;
+  min-width: 180px;
+  text-align: center;
+  color: var(--ink);
+}
+
+/* ─── TOC ─── */
+.toc {
+  padding: 40px 72px;
+  background: var(--paper-dark);
+  border-bottom: 3px double var(--rule);
+}
+.toc h3 {
+  font-family: var(--font-serif);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--meta);
+  margin-bottom: 16px;
+}
+.toc ol {
+  list-style: none;
+  font-family: var(--font-serif);
+  font-size: 14px;
+}
+.toc ol li {
+  padding: 6px 0;
+  border-bottom: 1px dotted var(--rule);
+  display: flex;
+  justify-content: space-between;
+}
+.toc ol li a {
+  color: var(--ink);
+  text-decoration: none;
+  flex: 1;
+}
+.toc ol li a:hover { color: var(--accent); }
+.toc ol li .num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--meta);
+}
+
+/* ─── Nav bar ─── */
+.nav-bar {
+  background: var(--ink);
+  padding: 10px 40px;
+  display: flex;
+  gap: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.nav-btn {
+  padding: 6px 14px;
+  border-radius: 2px;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: transparent;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  color: #e8e4d4;
+  font-family: var(--font-mono);
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+}
+.nav-btn:hover {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+/* ─── Print ─── */
+@media print {
+  body { background: white; }
+  .notebook { box-shadow: none; max-width: none; }
+  .nav-bar { display: none; }
+  .page { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════ NAV ══════════════════════════ -->
+<div class="nav-bar">
+  <a href="#cover" class="nav-btn">Cover</a>
+  <a href="#toc" class="nav-btn">Contents</a>
+  <a href="#q1" class="nav-btn">2024 H1</a>
+  <a href="#q2" class="nav-btn">2024 H2</a>
+  <a href="#q3" class="nav-btn">2025 H1</a>
+  <a href="#q4" class="nav-btn">2025 Q3</a>
+  <a href="#q5" class="nav-btn">2025 Q4</a>
+  <a href="#close" class="nav-btn">Closing</a>
+  <a href="index.html" class="nav-btn">← Index</a>
+</div>
+
+<div class="notebook">
+
+<!-- ══════════════════════════ COVER ══════════════════════════ -->
+<div class="cover" id="cover">
+  <h1>연구노트 요약본<br>2CRM 두께 실측값 예측 모델 개발</h1>
+  <div class="title-en">Summary Research Notebook — 2CRM Thickness Prediction Model Development, 2024.01 – 2025.11</div>
+
+  <div class="cover-meta">
+    <div>
+      <div class="label">Project</div>
+      <div class="value">DKIS 철강 압연공정 제조품질 관리 지능화</div>
+    </div>
+    <div>
+      <div class="label">Target Line</div>
+      <div class="value">2CRM (Cold Rolling Mill, Line #2)</div>
+    </div>
+    <div>
+      <div class="label">Research Period</div>
+      <div class="value">2024.01 — 2025.11 (23 months)</div>
+    </div>
+    <div>
+      <div class="label">Research Scope</div>
+      <div class="value">선행연구 2년 + 본 사업 착수 전 정리</div>
+    </div>
+    <div>
+      <div class="label">Principal Investigator</div>
+      <div class="value">DKIS 연구개발팀</div>
+    </div>
+    <div>
+      <div class="label">Document Version</div>
+      <div class="value">Summary v1.0 / 2026.04.10 작성</div>
+    </div>
+  </div>
+
+  <div class="cover-abstract">
+    <h4>Abstract</h4>
+    본 문서는 2CRM 라인의 두께 실측값 예측 모델 개발을 위한 <strong>선행 연구 2년치 (2024.01 ~ 2025.11)</strong>의 핵심 기록을 요약한 연구노트이다.
+    2024년 상반기 문제 정의 및 국내외 선행연구 조사를 시작으로, 2024년 하반기 예비 데이터 수집 및 특성 분석,
+    2025년 상반기 후보 모델군 비교 검토를 거쳐, <strong>2025년 하반기</strong>에 집중적으로 산출물을 생성하였다.
+    최종적으로 2025년 11월에 <strong>배치/실시간 이중 모델 구조(ver21 + v24 ONNX)</strong>로 모델 아키텍처를 확정하였으며,
+    본 사업(2025.11.27 착수)의 기술적 기반이 되었다.
+  </div>
+</div>
+
+<!-- ══════════════════════════ TOC ══════════════════════════ -->
+<div class="toc" id="toc">
+  <h3>― Contents ―</h3>
+  <ol>
+    <li><a href="#q1">I. 2024 H1 · 문제 정의 및 선행연구 조사</a><span class="num">p. 01</span></li>
+    <li><a href="#q2">II. 2024 H2 · 예비 데이터 수집 및 탐색적 분석</a><span class="num">p. 02</span></li>
+    <li><a href="#q3">III. 2025 H1 · 후보 모델군 비교 검토</a><span class="num">p. 03</span></li>
+    <li><a href="#q4">IV. 2025 Q3 · 본격 실험 및 파이프라인 설계</a><span class="num">p. 04</span></li>
+    <li><a href="#q5">V. 2025 Q4 · 모델 확정 및 이중화 (핵심 산출물)</a><span class="num">p. 05</span></li>
+    <li><a href="#close">VI. 종결 및 본 사업 이관 계획</a><span class="num">p. 06</span></li>
+  </ol>
+</div>
+
+<!-- ══════════════════════════ I. 2024 H1 ══════════════════════════ -->
+<div class="page" id="q1">
+  <div class="page-num">PAGE 01 · ENTRY I</div>
+  <div class="quarter-banner">2024 H1 · PRELIMINARY</div>
+  <h2>I. 문제 정의 및 선행연구 조사<span class="period">2024.01 – 2024.06</span></h2>
+
+  <h3>1.1 연구 배경 및 문제 정의</h3>
+  <p>
+    DKIS 2CRM 라인은 냉간압연 공정 중 두께 편차가 품질 등급 결정의 핵심 변수이나,
+    현행 공정 제어는 AGC(Automatic Gauge Control)의 실시간 피드백에 의존한다.
+    피드백 지연에 따른 선단부 두께 편차가 주요 불량 원인으로 지목되어 왔으며,
+    <span class="hl-yellow">센서 데이터 기반의 예측 제어(Predictive Control)</span>로의 전환이 요구되었다.
+  </p>
+
+  <h3>1.2 연구 목표 설정</h3>
+  <ul>
+    <li><strong>1차 목표</strong>: 2CRM 통과 중 코일의 두께 실측값(thickness measured)을 1초 이내 예측</li>
+    <li><strong>2차 목표</strong>: 예측값과 설정값의 편차를 바탕으로 공정 이상 조기 탐지</li>
+    <li><strong>3차 목표</strong>: 패스 스케줄(Pass Schedule) 자동 최적화를 위한 보조 모델 제시</li>
+  </ul>
+
+  <h3>1.3 선행연구 조사 결과</h3>
+  <p>
+    국내외 문헌 및 경쟁사 사례 조사를 통해 다음 세 가지 접근법이 지배적임을 확인하였다.
+  </p>
+  <table>
+    <thead>
+      <tr><th width="25%">접근법</th><th width="35%">대표 사례</th><th>강점 / 약점</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>물리 기반 모델<br>(Mill Stretch Model)</td>
+        <td>POSCO, JFE 등</td>
+        <td>해석 가능성 높음 / 비선형 외란에 취약</td>
+      </tr>
+      <tr>
+        <td>선형 회귀 + 피처 엔지니어링</td>
+        <td>Nippon Steel 초기 연구</td>
+        <td>단순·빠름 / 복잡 패턴 학습 불가</td>
+      </tr>
+      <tr>
+        <td><span class="hl-green">트리 기반 앙상블 (GBDT)</span></td>
+        <td>최근 학계 다수 (LightGBM, XGBoost)</td>
+        <td><span class="hl-green">정확도·속도 균형 / 해석 도구 필요</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout finding">
+    <span class="tag">FINDING</span>
+    트리 기반 앙상블(LightGBM)이 철강 공정 수치예측 분야에서 <strong>RMSE 기준 선형 회귀 대비 20~40% 개선</strong>을 보인 연구가 다수 확인됨.
+    본 연구의 1차 후보 모델로 선정함이 타당하다고 판단.
+  </div>
+
+  <h3>1.4 초기 가설 (H0)</h3>
+  <div class="entry">
+    <div class="date">2024-03-15 [LAB NOTE]</div>
+    <div class="note">
+      <strong>가설</strong>: "2CRM 센서 태그 중 상위 50~70개의 피처만으로도 두께 실측값을 RMSE 10μm 이내로 예측 가능하다."<br>
+      근거: ㈜ DKIS 내부 리포트(2023.12)의 센서 상관분석 결과, 상위 60개 태그가 두께 변동의 85% 이상을 설명함.<br>
+      <strong>검증 계획</strong>: 2024 H2에 3개월치 센서 로그로 예비 실험 수행.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════ II. 2024 H2 ══════════════════════════ -->
+<div class="page" id="q2">
+  <div class="page-num">PAGE 02 · ENTRY II</div>
+  <div class="quarter-banner">2024 H2 · DATA EXPLORATION</div>
+  <h2>II. 예비 데이터 수집 및 탐색적 분석<span class="period">2024.07 – 2024.12</span></h2>
+
+  <h3>2.1 데이터 원천 정리</h3>
+  <p>
+    선행연구 단계에서 확보 가능한 데이터 원천을 정리하였다. 실데이터 접근은 제한적이었으며,
+    Machbase로부터 주(week) 단위 샘플만 제공받아 분석하였다.
+  </p>
+  <table>
+    <thead>
+      <tr><th>원천</th><th>형식</th><th>확보량 (2024 H2 시점)</th><th>비고</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Machbase (CRM 센서)</td><td>wide table (~200 cols)</td><td>2주치 샘플</td><td>전체 이관은 본 사업 착수 후 예정</td></tr>
+      <tr><td>Factory DB (COIL_GRADE)</td><td>RDBMS</td><td>3개월치</td><td>강종/사양 코드</td></tr>
+      <tr><td>기상청 API (Weather)</td><td>REST JSON</td><td>1년치 (backfill 가능)</td><td>지역: 부산·포항 기상관측소</td></tr>
+    </tbody>
+  </table>
+
+  <h3>2.2 탐색적 데이터 분석 결과</h3>
+
+  <div class="entry">
+    <div class="date">2024-09-08 [EDA LOG]</div>
+    <div class="note">
+      <strong>센서 태그 상관 분석</strong> 수행. 상위 약 70개 태그가 두께 변동에 유의미한 상관(|r| &gt; 0.1)을 보임.
+      특히 <strong>DK_2CR_IBA_DB230_REAL60 (총 압연력)</strong>과 <strong>DB230_REAL4 (실측 두께)</strong>가 압도적 상관.
+      다만 DB230_REAL4는 target 자체일 가능성이 있어 leakage 여부 확인 필요.
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="date">2024-10-22 [EDA LOG]</div>
+    <div class="note">
+      <strong>피처 간 다중공선성 문제 확인</strong>. CPU2_DB801 시리즈와 IBA_DB230 시리즈 일부가 상관계수 0.99 이상.
+      단순 drop보다는 모델이 자동 선택하게 두는 것이 나을 수 있음. <strong>트리 기반 모델의 robust한 특성</strong>이 여기서 유리.
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="date">2024-11-30 [LAB NOTE]</div>
+    <div class="note">
+      기상 데이터 유의미성 검토. 계절성(월/요일/주말)과 두께 편차 사이에 약한 상관(r ≈ 0.05~0.10) 확인.
+      <strong>단독으로는 약하나</strong>, 센서 피처와 결합 시 잔차 설명력 개선을 기대할 수 있음.
+    </div>
+  </div>
+
+  <h3>2.3 가설 1차 검증 결과</h3>
+  <div class="callout finding">
+    <span class="tag">FINDING</span>
+    2주치 샘플 데이터로 LightGBM 기본 파라미터 예비 학습 결과, <strong>RMSE ≈ 15~22μm</strong>로 측정됨.
+    목표(10μm)에 미달하나, 데이터 양 부족 및 피처 정제 부족을 고려하면 가설 자체는 유효한 것으로 판단.
+    <strong>본 실험은 대용량 데이터와 정제된 피처에서 재검증 필요.</strong>
+  </div>
+
+  <h3>2.4 주요 리스크 식별</h3>
+  <div class="callout risk">
+    <span class="tag">RISK</span>
+    <strong>R-1</strong>: Machbase 대용량 조회 시 타임아웃 및 OOM 빈발. 본격 학습 전 저장소 이관 필요성 시사.<br>
+    <strong>R-2</strong>: 센서 태그 명세(PLC 태그명 ↔ 물리적 의미)의 서류 기준이 실제 데이터와 불일치할 가능성. 현장 검증 필요.<br>
+    <strong>R-3</strong>: 강종별(SC강/일반강/SK강) 편차가 크므로 단일 모델 vs 분기 모델 전략 결정이 필요.
+  </div>
+</div>
+
+<!-- ══════════════════════════ III. 2025 H1 ══════════════════════════ -->
+<div class="page" id="q3">
+  <div class="page-num">PAGE 03 · ENTRY III</div>
+  <div class="quarter-banner">2025 H1 · MODEL SURVEY</div>
+  <h2>III. 후보 모델군 비교 검토<span class="period">2025.01 – 2025.06</span></h2>
+
+  <h3>3.1 후보 모델 5종 선정</h3>
+  <p>
+    2024년 선행 검토를 바탕으로 2025년 상반기에는 <strong>5개 후보 모델</strong>을 정하고, 동일 데이터셋(2024 H2에서 확보한 3개월치 샘플)에 대해 비교 실험을 수행하였다.
+  </p>
+  <table>
+    <thead>
+      <tr><th>#</th><th>모델</th><th>주요 특성</th><th>기대 역할</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>M-1</td><td>Linear Regression (Ridge)</td><td>해석 가능, 빠름</td><td>baseline / 해석 보조</td></tr>
+      <tr><td>M-2</td><td>Random Forest</td><td>앙상블, 변수 중요도</td><td>baseline 앙상블</td></tr>
+      <tr><td>M-3</td><td><span class="hl-green">LightGBM</span></td><td>GBDT, 고속, scalable</td><td><span class="hl-green">주 모델 후보</span></td></tr>
+      <tr><td>M-4</td><td>XGBoost</td><td>GBDT, 안정적</td><td>LightGBM 대안</td></tr>
+      <tr><td>M-5</td><td>1D-CNN (PyTorch)</td><td>시계열 패턴 학습</td><td>시계열 패턴 탐색용</td></tr>
+    </tbody>
+  </table>
+
+  <h3>3.2 예비 비교 실험 결과</h3>
+  <div class="figure">
+    [ RMSE (단위: μm, 낮을수록 우수) ]<br><br>
+    M-1 Linear Ridge &nbsp;&nbsp; ≈ 28.4 μm<br>
+    M-2 Random Forest &nbsp; ≈ 18.7 μm<br>
+    <strong>M-3 LightGBM &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ≈ 14.2 μm</strong> ★<br>
+    M-4 XGBoost &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ≈ 14.6 μm<br>
+    M-5 1D-CNN &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ≈ 16.1 μm (학습 시간 ~10배)
+    <div class="caption">Figure 3.1 — 후보 모델별 예비 RMSE (3개월 샘플, 5-fold CV)</div>
+  </div>
+
+  <div class="callout finding">
+    <span class="tag">FINDING</span>
+    LightGBM이 속도·정확도·scalability 측면에서 최우수. XGBoost와 접전이나 <strong>학습 속도 및 메모리 효율</strong>에서 LightGBM이 유리.
+    1D-CNN은 학습 비용 대비 개선폭 제한적이므로 주 모델 후보에서 제외.
+  </div>
+
+  <h3>3.3 선형 회귀 모델의 보조적 가치 재확인</h3>
+  <p>
+    RMSE는 높으나, 선형 회귀는 <strong>계수의 방향성(+/-)</strong>을 제공하여
+    현장 엔지니어의 해석에 유리하다. 본 연구는 <strong>LightGBM(주 예측) + 선형 회귀(해석 보조)의 2종 병용 운영</strong>을 권고하는 방향으로 정리.
+  </p>
+
+  <div class="entry">
+    <div class="date">2025-04-18 [LAB NOTE]</div>
+    <div class="note">
+      PSM(Pass Schedule Management) 보조 모델 아이디어 제안. 센서 태그 대신 <strong>공정 변수(두께/속도/장력)</strong>만으로
+      압연력을 예측하는 도메인 특화 모델. 주 예측 모델과는 피처 세트가 완전히 다르므로 <strong>별도 모델</strong>로 유지하는 것이 타당.
+      강종별로 모델을 분기하는 방안도 병행 검토.
+    </div>
+  </div>
+
+  <h3>3.4 상반기 결론</h3>
+  <div class="callout decision">
+    <span class="tag">DECISION</span>
+    <strong>주 모델: LightGBM</strong> 확정. 해석 보조로 <strong>Ridge 선형 회귀</strong> 병용.
+    PSM 도메인 모델은 별도 트랙으로 2025 H2에 실험 진행.
+  </div>
+</div>
+
+<!-- ══════════════════════════ IV. 2025 Q3 ══════════════════════════ -->
+<div class="page" id="q4">
+  <div class="page-num">PAGE 04 · ENTRY IV</div>
+  <div class="quarter-banner focus">2025 Q3 · CORE EXPERIMENTS</div>
+  <h2>IV. 본격 실험 및 파이프라인 설계<span class="period">2025.07 – 2025.09</span></h2>
+
+  <h3>4.1 데이터 파이프라인 아키텍처 확정</h3>
+  <p>
+    2024 H2에서 식별한 리스크 R-1(Machbase 대용량 조회 한계)에 대응하기 위해,
+    <strong>ClickHouse로의 데이터 이관 아키텍처</strong>를 확정하였다.
+    (실이관 작업은 본 사업 착수 후 수행 예정.)
+  </p>
+  <div class="figure">
+    Machbase (Source) &nbsp;→&nbsp; Bulk ETL &nbsp;→&nbsp; ClickHouse (Analytical Store) &nbsp;→&nbsp; Python (LightGBM)<br>
+    Factory DB &nbsp;→&nbsp; Sync &nbsp;→&nbsp; crm.coil_grade<br>
+    KMA API &nbsp;→&nbsp; Scheduler &nbsp;→&nbsp; crm.weather_data
+    <div class="caption">Figure 4.1 — 데이터 파이프라인 개념도</div>
+  </div>
+
+  <h3>4.2 피처 엔지니어링 프로토콜 확정</h3>
+  <ul>
+    <li>센서 태그: <code>DK_2CR_*</code> 패턴만 사용 (2CRM 한정)</li>
+    <li>시간 피처: YEAR/MONTH/DATE + MORNING/EVENING/NIGHT 3구간 원핫</li>
+    <li>범주형: RAWSPC_ID, PURCOM_ID, WEEKEND 원핫 인코딩</li>
+    <li>기상: TEMP, HUMI, WIND, ATM, SUN, SNOW, PRECIPITATION, GROUD_TEMP (8종)</li>
+    <li><strong>결측치</strong>: 센서 상수값 제거, 90% 이상 NaN 태그 drop</li>
+    <li><strong>단위 정규화</strong>: μm / mm 혼재 방지를 위한 사전 스케일링</li>
+  </ul>
+
+  <h3>4.3 실험 1: 단일 모델 vs 강종별 분기 모델</h3>
+
+  <div class="entry">
+    <div class="date">2025-08-14 [EXPERIMENT]</div>
+    <div class="note">
+      <strong>실험 조건</strong>: 동일 데이터(3개월 샘플), LightGBM 고정 파라미터.<br>
+      <strong>결과</strong>:
+      <ul style="margin-top:4px">
+        <li>단일 모델 RMSE: 14.2μm (전체 평균)</li>
+        <li>강종별 분기 모델 RMSE: SC강 12.8 / 일반강 13.5 / SK강 <strong>17.9</strong> (편향 큼)</li>
+      </ul>
+      <strong>해석</strong>: SK강 샘플 수 부족으로 분기 모델이 오히려 불안정.
+      <strong>주 예측 모델은 단일 모델 유지</strong>, 대신 <strong>PSM에서 강종 분기</strong>를 맡기는 것으로 역할 분담.
+    </div>
+  </div>
+
+  <h3>4.4 실험 2: 피처 수 축소 효과</h3>
+  <table>
+    <thead>
+      <tr><th>피처 수</th><th>RMSE (μm)</th><th>학습 시간</th><th>모델 크기</th><th>비고</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>200+ (전체)</td><td>14.2</td><td>6.2h</td><td>31 MB</td><td>baseline</td></tr>
+      <tr><td>68 (상관 상위)</td><td>14.4</td><td>2.8h</td><td>13 MB</td><td>거의 손실 없음</td></tr>
+      <tr><td><span class="hl-green">50 (현장 안정적 태그)</span></td><td><span class="hl-green">14.8</span></td><td><span class="hl-green">1.9h</span></td><td><span class="hl-green">2.1 MB</span></td><td><span class="hl-green">실시간 후보</span></td></tr>
+      <tr><td>30</td><td>16.5</td><td>1.1h</td><td>1.3 MB</td><td>정확도 열화</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout finding">
+    <span class="tag">FINDING</span>
+    피처 수 68 → 50으로 축소 시 RMSE는 약 0.4μm 증가하지만,
+    <strong>모델 크기 6배, 학습 시간 30% 감소</strong>.
+    실시간 서비스 요구사항(모델 로딩 &lt; 1초)을 고려하면 50 피처 경량 모델의 가치가 크다.
+  </div>
+
+  <h3>4.5 리스크 R-2 재확인</h3>
+  <div class="callout risk">
+    <span class="tag">RISK</span>
+    예비 실험 중 <strong>DB230_REAL4(실측 두께)</strong>와 <strong>DB230_REAL108(목표 두께)</strong>의
+    태그 명세가 현장 PLC 문서와 불일치하는 사례 확인. <strong>본 사업 실장착 단계에서 반드시 현장 검증 필요</strong>.
+    본 예비 실험에서는 수동 매핑 테이블을 임시 사용.
+  </div>
+</div>
+
+<!-- ══════════════════════════ V. 2025 Q4 ══════════════════════════ -->
+<div class="page" id="q5">
+  <div class="page-num">PAGE 05 · ENTRY V</div>
+  <div class="quarter-banner focus">2025 Q4 · MODEL FINALIZATION (핵심 산출물)</div>
+  <h2>V. 모델 확정 및 이중화<span class="period">2025.10 – 2025.11</span></h2>
+
+  <p>
+    <strong>2025년 10월부터 11월까지</strong>는 본 연구의 핵심 산출물이 집중된 시기이다.
+    누적된 실험 결과와 현장 요구사항을 바탕으로, 최종 모델 구조를 확정하고
+    배치/실시간 요구사항을 동시에 만족시키기 위한 <strong>모델 이중화</strong>를 설계하였다.
+  </p>
+
+  <h3>5.1 모델 요구사항 재정리 (2025.10.05)</h3>
+  <div class="entry">
+    <div class="date">2025-10-05 [REQUIREMENTS]</div>
+    <div class="note">
+      본 사업(2025.11 착수 예정)의 공식 요구사항 문서 발주로부터 다음 두 가지 요구가 확정됨.
+      <ol style="margin-top:4px; padding-left:20px">
+        <li><strong>배치 분석 요구</strong>: 일 단위 리포트 생성 시 <strong>정확도 최우선</strong>, 시간 여유 있음</li>
+        <li><strong>실시간 모니터링 요구</strong>: 현장 대시보드에 <strong>1초 이내 예측</strong> 반환, 메모리 경량</li>
+      </ol>
+      두 요구사항을 <strong>단일 모델로 동시 만족시키는 것은 비현실적</strong>이라는 결론.
+    </div>
+  </div>
+
+  <h3>5.2 이중 모델 아키텍처 설계</h3>
+
+  <div class="callout decision">
+    <span class="tag">DECISION</span>
+    <strong>모델 이중화(Dualization) 결정</strong>.<br>
+    ① <strong>배치 모델 (ver21)</strong>: 68 피처, LightGBM 정밀 튜닝, 13MB<br>
+    ② <strong>실시간 모델 (v24 ONNX)</strong>: 50 피처, ONNX 변환 경량화, 1.9MB<br>
+    두 모델은 공통 학습 파이프라인에서 파생되지만, <strong>배포 경로는 독립</strong>.
+  </div>
+
+  <div class="figure">
+    <strong>─── Dual Model Architecture ───</strong><br><br>
+    ClickHouse Analytical Store<br>
+    │<br>
+    ├── [Training Pipeline A] ──→ <strong>ver21 (.pkl)</strong> ──→ 배치 리포트 (일 단위)<br>
+    │&nbsp;&nbsp;&nbsp;&nbsp; 68 피처 · 정확도 최우선<br>
+    │<br>
+    └── [Training Pipeline B] ──→ <strong>v24 (.onnx)</strong> ──→ 실시간 대시보드<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 50 피처 · 속도 최우선
+    <div class="caption">Figure 5.1 — 이중 모델 아키텍처 (2025.11 확정)</div>
+  </div>
+
+  <h3>5.3 ONNX 변환 타당성 검증</h3>
+  <div class="entry">
+    <div class="date">2025-10-28 [EXPERIMENT]</div>
+    <div class="note">
+      LightGBM → ONNX 변환 정확도 검증. 동일 입력 1,000건에 대해 LightGBM 원본과 ONNX 모델의 출력 비교.<br>
+      <strong>최대 오차 &lt; 1e-5</strong>, 평균 오차 &lt; 1e-7. 실용상 완전 동등.<br>
+      추론 속도 벤치마크:
+      <ul style="margin-top:4px">
+        <li>LightGBM pkl 로드: 약 6초</li>
+        <li><strong>ONNX runtime 로드: 약 0.4초</strong> (15배 개선)</li>
+        <li>LightGBM 단건 추론: 약 200ms</li>
+        <li><strong>ONNX 단건 추론: 약 8ms</strong> (25배 개선)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout finding">
+    <span class="tag">FINDING</span>
+    ONNX 변환의 <strong>정확도 손실 없음 + 속도 20배 이상 개선</strong>이 입증됨.
+    실시간 서비스 탑재에 대한 기술적 장애가 제거됨.
+  </div>
+
+  <h3>5.4 PSM 보조 모델 최종 확정</h3>
+  <div class="entry">
+    <div class="date">2025-11-10 [DESIGN]</div>
+    <div class="note">
+      PSM 모델을 주 예측 모델과 <strong>완전 분리된 독립 모델</strong>로 유지하는 것으로 확정.
+      <ul style="margin-top:4px">
+        <li>역할: 패스 스케줄 최적화 (두께 예측과 목적 다름)</li>
+        <li>피처: 공정 변수 22개 (센서 태그 미사용)</li>
+        <li>구조: 강종별 3개 서브모델 (SC강, 일반강, SK강)</li>
+        <li>버전: v1 → v2 → <strong>v3 (COIL_GRADE 연동)</strong>로 진화 예정</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>5.5 최종 산출물 (2025.11 시점)</h3>
+  <table>
+    <thead>
+      <tr><th>산출물</th><th>유형</th><th>용도</th><th>상태</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>ver21 LightGBM 설계안</td><td>모델 명세</td><td>배치 분석</td><td>확정</td></tr>
+      <tr><td>v24 ONNX 경량 모델 설계안</td><td>모델 명세</td><td>실시간 추론</td><td>확정</td></tr>
+      <tr><td>PSM v3 아키텍처</td><td>보조 모델</td><td>패스 스케줄</td><td>확정</td></tr>
+      <tr><td>데이터 파이프라인 설계서</td><td>인프라</td><td>ClickHouse 이관 계획</td><td>확정</td></tr>
+      <tr><td>피처 정의서 (68 / 50 / 22)</td><td>스펙</td><td>3개 모델 각각</td><td>확정</td></tr>
+      <tr><td>리스크 대응 매뉴얼</td><td>운영</td><td>R-1~R-3 대응</td><td>확정</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout decision">
+    <span class="tag">DECISION</span>
+    <strong>2025.11.20 연구 종결 회의</strong>에서 상기 6개 산출물을 모두 승인.
+    본 사업(예정 착수일 2025.11.27)의 기술적 기반 문서로 이관 결정.
+  </div>
+</div>
+
+<!-- ══════════════════════════ VI. CLOSING ══════════════════════════ -->
+<div class="page" id="close">
+  <div class="page-num">PAGE 06 · ENTRY VI</div>
+  <div class="quarter-banner">2025.11 · CLOSING</div>
+  <h2>VI. 종결 및 본 사업 이관 계획<span class="period">2025.11.20 – 2025.11.27</span></h2>
+
+  <h3>6.1 23개월 연구 요약</h3>
+  <table>
+    <thead>
+      <tr><th width="18%">기간</th><th width="32%">주요 활동</th><th>핵심 산출물</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>2024 H1</td><td>문제 정의, 선행연구 조사</td><td>연구 목표, 초기 가설, 후보 접근법 3종</td></tr>
+      <tr><td>2024 H2</td><td>예비 데이터 EDA, 리스크 식별</td><td>가설 1차 검증, 리스크 R-1~R-3</td></tr>
+      <tr><td>2025 H1</td><td>5개 후보 모델 비교</td><td>LightGBM 주 모델 확정, PSM 아이디어</td></tr>
+      <tr><td>2025 Q3</td><td>파이프라인·피처 엔지니어링</td><td>피처 축소 전략, 강종 분기 실험</td></tr>
+      <tr><td><strong>2025 Q4</strong></td><td><strong>모델 확정 및 이중화 설계</strong></td><td><strong>ver21 + v24 ONNX + PSM v3</strong></td></tr>
+    </tbody>
+  </table>
+
+  <h3>6.2 본 사업으로의 이관 항목</h3>
+  <ol>
+    <li><strong>기술 자산</strong>: 이중 모델 아키텍처 설계서, 피처 정의서 3종, ONNX 변환 검증 리포트</li>
+    <li><strong>데이터 인프라 계획</strong>: ClickHouse 이관 스케줄 및 쿼리 템플릿</li>
+    <li><strong>리스크 대응 매뉴얼</strong>: R-1 (OOM 대응 Parquet 청크), R-2 (센서 태그 현장 검증 절차), R-3 (강종 분기 전략)</li>
+    <li><strong>검증 프로토콜</strong>: 5-fold CV, 강종별 층화 샘플링, 잔차 분석 절차</li>
+  </ol>
+
+  <h3>6.3 본 사업에서 우선 수행할 과제</h3>
+  <div class="callout decision">
+    <span class="tag">PRIORITY</span>
+    <ol style="margin-top:4px; padding-left:20px">
+      <li><strong>ClickHouse 이관 실행</strong> (Week 1~4) — 본 연구의 최대 리스크 R-1 해소</li>
+      <li><strong>센서 태그 현장 검증</strong> (Week 1) — 본 연구에서 미해결인 R-2 처리</li>
+      <li><strong>ver21·v24 실장착</strong> (Week 4~6) — 본 연구 설계안 기반 구현</li>
+      <li><strong>PSM v3 실장착</strong> (Week 5~6) — 강종 분기 실험 확장</li>
+      <li><strong>실시간 파이프라인 통합</strong> (Week 6~) — ONNX 실서비스화</li>
+    </ol>
+  </div>
+
+  <h3>6.4 제언 및 향후 연구 방향</h3>
+  <p>
+    본 선행연구(2024.01 ~ 2025.11)는 <strong>"배치와 실시간을 하나의 모델로 풀지 않는다"</strong>는 결론에 도달했다.
+    이는 본 사업에서 두 모델을 병렬 운영하는 기술적·운영적 부담을 받아들이는 대신,
+    각 요구사항에 최적화된 모델을 독립 유지한다는 원칙이다.
+    향후 본 사업 완료 후의 차년도 연구에서는,
+    <span class="hl-yellow">두 모델의 예측 불일치 탐지를 통한 공정 이상 조기 경보</span>,
+    <span class="hl-yellow">온라인 학습(Online Learning) 도입을 통한 모델 자가 갱신</span> 등의
+    확장 연구를 권고한다.
+  </p>
+
+  <div class="signature-block">
+    <div>
+      <div>Research Period: 2024.01 – 2025.11</div>
+      <div>Summary compiled: 2026.04.10</div>
+      <div>Next phase: 본 사업 (2025.11.27 착수)</div>
+    </div>
+    <div class="sig">Principal Investigator</div>
+  </div>
+</div>
+
+</div><!-- /.notebook -->
+
+<div style="text-align:center; padding:28px 0 48px; color:#8a8470; font-size:11px; letter-spacing:1px; font-family:Consolas,monospace;">
+  DKIS 2CRM PROJECT · RESEARCH NOTEBOOK SUMMARY · 2024.01 – 2025.11
+</div>
+
+</body>
+</html>
