@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>모델 개발 시나리오 — 시행착오 기록 | 2CRM 두께 예측 프로젝트</title>
+<style>
+:root {
+  --blue: #1a73e8;
+  --navy: #1a1a2e;
+  --green: #388e3c;
+  --orange: #f5a623;
+  --red: #d32f2f;
+  --teal: #00897b;
+  --purple: #7b1fa2;
+  --gray: #757575;
+  --lgray: #f5f5f5;
+  --bg-err: #ffebee;
+  --bg-ok: #e8f5e9;
+  --bg-warn: #fff8e1;
+  --bg-info: #e3f2fd;
+  --font: 'Pretendard', 'Malgun Gothic', -apple-system, sans-serif;
+}
+
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: #eef1f6;
+  color: var(--navy);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
+}
+
+/* ─── Page Header ─── */
+.page-header {
+  background: linear-gradient(135deg, #1a1a2e 0%, #2d2d5e 40%, #4a4a7e 100%);
+  padding: 48px 60px 40px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+.page-header::before {
+  content: ''; position: absolute; top: 0; right: 0; width: 500px; height: 100%;
+  background: radial-gradient(circle at top right, rgba(26,115,232,0.3), transparent 70%);
+}
+.page-header h1 {
+  font-size: 32px; font-weight: 800; letter-spacing: -0.8px; position: relative;
+}
+.page-header .subtitle {
+  font-size: 15px; opacity: 0.7; margin-top: 8px; position: relative;
+}
+.page-header .tagline {
+  margin-top: 24px;
+  display: inline-block;
+  padding: 10px 20px;
+  background: rgba(255,255,255,0.1);
+  border-left: 3px solid #f5a623;
+  border-radius: 4px;
+  font-size: 14px;
+  font-style: italic;
+  position: relative;
+}
+
+/* ─── Container ─── */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 40px 80px;
+}
+
+/* ─── TL;DR Box ─── */
+.tldr {
+  background: white;
+  border-radius: 16px;
+  padding: 28px 36px;
+  margin-bottom: 40px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  border-left: 6px solid var(--blue);
+}
+.tldr h3 {
+  font-size: 16px; font-weight: 700; margin-bottom: 12px;
+  color: var(--blue);
+}
+.tldr p {
+  font-size: 14px; color: #444; line-height: 1.8;
+}
+
+/* ─── Timeline ─── */
+.timeline {
+  position: relative;
+  padding-left: 40px;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 14px; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--blue), var(--teal), var(--orange), var(--red), var(--green));
+  border-radius: 2px;
+}
+
+.phase {
+  position: relative;
+  margin-bottom: 48px;
+}
+.phase-dot {
+  position: absolute;
+  left: -34px; top: 8px;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: white;
+  border: 4px solid var(--blue);
+  box-shadow: 0 0 0 4px rgba(26,115,232,0.15);
+}
+.phase.teal .phase-dot { border-color: var(--teal); box-shadow: 0 0 0 4px rgba(0,137,123,0.15); }
+.phase.orange .phase-dot { border-color: var(--orange); box-shadow: 0 0 0 4px rgba(245,166,35,0.15); }
+.phase.red .phase-dot { border-color: var(--red); box-shadow: 0 0 0 4px rgba(211,47,47,0.15); }
+.phase.green .phase-dot { border-color: var(--green); box-shadow: 0 0 0 4px rgba(56,142,60,0.15); }
+.phase.purple .phase-dot { border-color: var(--purple); box-shadow: 0 0 0 4px rgba(123,31,162,0.15); }
+
+.phase-header {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.phase-date {
+  display: inline-block;
+  padding: 4px 12px;
+  background: var(--navy);
+  color: white;
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Consolas', 'Monaco', monospace;
+}
+.phase-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--navy);
+  letter-spacing: -0.3px;
+}
+.phase-subtitle {
+  font-size: 13px;
+  color: var(--gray);
+  margin-left: auto;
+}
+
+.phase-body {
+  background: white;
+  border-radius: 14px;
+  padding: 26px 32px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+.phase-body h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 18px 0 8px;
+}
+.phase-body h4:first-child { margin-top: 0; }
+
+.phase-body p {
+  font-size: 14px;
+  color: #444;
+  line-height: 1.8;
+  margin-bottom: 12px;
+}
+
+.phase-body ul {
+  margin: 8px 0 12px 20px;
+}
+.phase-body li {
+  font-size: 13.5px;
+  color: #444;
+  line-height: 1.8;
+  margin-bottom: 4px;
+}
+
+/* ─── Callouts ─── */
+.callout {
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin: 14px 0;
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+.callout.err {
+  background: var(--bg-err);
+  border-left: 4px solid var(--red);
+  color: #6b1212;
+}
+.callout.ok {
+  background: var(--bg-ok);
+  border-left: 4px solid var(--green);
+  color: #1b4620;
+}
+.callout.warn {
+  background: var(--bg-warn);
+  border-left: 4px solid var(--orange);
+  color: #6b4a00;
+}
+.callout.info {
+  background: var(--bg-info);
+  border-left: 4px solid var(--blue);
+  color: #0d3c78;
+}
+.callout strong { font-weight: 700; }
+.callout .label {
+  display: inline-block;
+  font-weight: 800;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-right: 6px;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.callout.err .label { background: var(--red); color: white; }
+.callout.ok .label { background: var(--green); color: white; }
+.callout.warn .label { background: var(--orange); color: white; }
+.callout.info .label { background: var(--blue); color: white; }
+
+/* ─── Code blocks ─── */
+.code {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 12.5px;
+  line-height: 1.7;
+  overflow-x: auto;
+  margin: 12px 0;
+}
+.code .comment { color: #6c7086; }
+.code .key { color: #f9e2af; }
+.code .str { color: #a6e3a1; }
+.code .num { color: #fab387; }
+
+/* ─── Stat row ─── */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin: 14px 0;
+}
+.stat {
+  background: var(--lgray);
+  border-radius: 8px;
+  padding: 14px 12px;
+  text-align: center;
+}
+.stat .num {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--navy);
+}
+.stat .label {
+  font-size: 11px;
+  color: var(--gray);
+  margin-top: 2px;
+}
+
+/* ─── Before/After ─── */
+.compare {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 14px;
+  align-items: center;
+  margin: 16px 0;
+}
+.compare .col {
+  background: var(--lgray);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.compare .col.bad { background: #fff5f5; border: 1px solid #ffcdd2; }
+.compare .col.good { background: #f3faf5; border: 1px solid #c8e6c9; }
+.compare .col h5 {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 8px;
+}
+.compare .col .big {
+  font-size: 18px;
+  font-weight: 700;
+}
+.compare .arrow {
+  font-size: 24px;
+  color: var(--gray);
+}
+
+/* ─── Quote ─── */
+.quote {
+  border-left: 4px solid var(--purple);
+  padding: 12px 20px;
+  background: #faf5ff;
+  border-radius: 0 8px 8px 0;
+  font-style: italic;
+  color: #4a1a6a;
+  font-size: 13.5px;
+  margin: 14px 0;
+}
+.quote::before {
+  content: '"';
+  font-size: 32px;
+  color: var(--purple);
+  font-family: Georgia, serif;
+  line-height: 0;
+  vertical-align: -14px;
+  margin-right: 4px;
+}
+
+/* ─── Section titles ─── */
+.section-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--navy);
+  margin: 40px 0 20px;
+  padding-bottom: 12px;
+  border-bottom: 3px solid var(--blue);
+  letter-spacing: -0.5px;
+}
+
+/* ─── Nav ─── */
+.nav-bar {
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 12px 60px;
+  display: flex;
+  gap: 8px;
+  position: sticky;
+  top: 0;
+  z-index: 99;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  flex-wrap: wrap;
+}
+.nav-btn {
+  padding: 7px 14px;
+  border-radius: 18px;
+  border: 1px solid #ddd;
+  background: white;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--navy);
+  transition: all 0.2s;
+}
+.nav-btn:hover {
+  background: var(--blue);
+  color: white;
+  border-color: var(--blue);
+}
+
+/* ─── Print ─── */
+@media print {
+  body { background: white; }
+  .nav-bar { display: none; }
+  .phase-body { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════ HEADER ══════════════════════════ -->
+<div class="page-header">
+  <h1>모델 개발 시나리오 — 시행착오의 기록</h1>
+  <div class="subtitle">2CRM 두께 실측값 예측 프로젝트 · 개발 여정 상세 문서</div>
+  <div class="tagline">
+    "예측 모델 하나 만드는 게 이렇게 어려울 줄 몰랐다" — 2025.11 ~ 2026.04, 5개월간의 기록
+  </div>
+</div>
+
+<!-- ══════════════════════════ NAV ══════════════════════════ -->
+<div class="nav-bar">
+  <a href="#tldr" class="nav-btn">TL;DR</a>
+  <a href="#phase1" class="nav-btn">① 착수</a>
+  <a href="#phase2" class="nav-btn">② 데이터 지옥</a>
+  <a href="#phase3" class="nav-btn">③ 첫 모델</a>
+  <a href="#phase4" class="nav-btn">④ OOM 대참사</a>
+  <a href="#phase5" class="nav-btn">⑤ 피처 정리</a>
+  <a href="#phase6" class="nav-btn">⑥ PSM 분기</a>
+  <a href="#phase7" class="nav-btn">⑦ 실시간 충격</a>
+  <a href="#phase8" class="nav-btn">⑧ 둘로 나누기</a>
+  <a href="#phase9" class="nav-btn">⑨ 센서 매핑 지옥</a>
+  <a href="#phase10" class="nav-btn">⑩ 마무리</a>
+  <a href="#retro" class="nav-btn">회고</a>
+  <a href="index.html" class="nav-btn">← 목록</a>
+</div>
+
+<div class="container">
+
+<!-- ══════════════════════════ TL;DR ══════════════════════════ -->
+<div class="tldr" id="tldr">
+  <h3>TL;DR — 한 줄 요약</h3>
+  <p>
+    사업 초기에 <strong>ver21 하나면 충분</strong>할 줄 알았다.<br>
+    데이터 이관, OOM, 센서 태그 오매핑, 피처 중요도 0 미스터리, 강종 분기 문제를 거친 끝에…<br>
+    <strong>배치용 ver21 (68 피처, 13MB)</strong>과 <strong>실시간용 v24 ONNX (50 피처, 1.9MB)</strong>로
+    <strong>모델을 둘로 나누고</strong>, 그 위에 <strong>PSM v3 도메인 모델</strong>을 얹는 것으로 정리되었다.<br>
+    이 문서는 그 과정에서 밟은 지뢰들의 기록이다.
+  </p>
+</div>
+
+<!-- ══════════════════════════ TIMELINE ══════════════════════════ -->
+<div class="timeline">
+
+<!-- ── PHASE 1 ── -->
+<div class="phase" id="phase1">
+  <div class="phase-dot"></div>
+  <div class="phase-header">
+    <span class="phase-date">2025.11.27</span>
+    <span class="phase-title">① 착수 — "그냥 회귀 모델 하나 만들면 되는 거 아냐?"</span>
+    <span class="phase-subtitle">Week 0</span>
+  </div>
+  <div class="phase-body">
+    <p>
+      사업 킥오프. 과제명은 "철강 압연공정 제조품질 관리 지능화". 핵심 목표는 <strong>2CRM 라인의 두께 실측값 예측</strong>.
+      초기 회의에서 가장 많이 나온 말은 "센서 데이터가 너무 많아서 다 쓸 수는 없을 것 같은데요"였고,
+      가장 많이 나온 반응은 "일단 다 넣고 돌려봅시다"였다.
+    </p>
+
+    <div class="callout info">
+      <span class="label">초기 가정</span>
+      ver21 노트북 파일 하나에 Pandas로 데이터 로드 → 피처 엔지니어링 → LightGBM 학습 →
+      RMSE 보고 → 끝. 1주일이면 충분할 것 같았다.
+    </div>
+
+    <h4>초기 피처 후보 (너무 많았다)</h4>
+    <ul>
+      <li>CRM 센서 태그 (DK_2CR_*): 약 200개 후보</li>
+      <li>기상 데이터: 8개 (TEMP, HUMI, WIND, ATM, SUN, SNOW, PRECIPITATION, GROUD_TEMP)</li>
+      <li>시간/요일/주말: 10개 내외</li>
+      <li>코일 메타 (RAWSPC_ID, PURCOM_ID, 강종): 50개 이상 (원핫 후)</li>
+    </ul>
+
+    <div class="quote">
+      "일단 전부 넣고 feature_importance 보고 고르죠" — 이 한마디가 앞으로 5개월을 결정했다.
+    </div>
+  </div>
+</div>
+
+<!-- ── PHASE 2 ── -->
+<div class="phase teal" id="phase2">
+  <div class="phase-dot"></div>
+  <div class="phase-header">
+    <span class="phase-date">2025.11.27 ~ 12.22</span>
+    <span class="phase-title">② 데이터 지옥 — Machbase에서 데이터를 뺀다는 것</span>
+    <span class="phase-subtitle">Week 1 ~ 4</span>
+  </div>
+  <div class="phase-body">
+    <p>
+      처음 마주한 벽은 모델링이 아니라 <strong>데이터 소스</strong>였다.
+      센서 데이터는 Machbase에 있고, 코일 마스터는 Factory DB에, 기상은 기상청 API에.
+      세 개를 timestamp 기준으로 정렬해서 합치는 것부터가 프로젝트였다.
+    </p>
+
+    <div class="callout err">
+      <span class="label">첫 번째 벽</span>
+      Machbase <code>WIDE_2CRM_THICK</code> 테이블은 약 <strong>6.3억 건</strong>. 단일 쿼리로 3일치만 가져와도 Python이 메모리 터짐.
+      Jupyter 노트북이 5분만에 커널 죽음. "이 데이터를 어떻게 모델링하라는 거지?"
+    </div>
+
+    <h4>시도한 것들 (전부 실패)</h4>
+    <ul>
+      <li><strong>시도 1</strong>: 전체 SELECT → 즉사 (OOM)</li>
+      <li><strong>시도 2</strong>: 시간 청크 단위 반복 조회 → Machbase 커넥터 타임아웃 빈발</li>
+      <li><strong>시도 3</strong>: Pandas read_sql chunksize → 메모리는 안 터지지만 12시간 이상 소요</li>
+      <li><strong>시도 4</strong>: 샘플링 → 정확도 떨어짐 + 재현성 문제</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">결단</span>
+      팀장 한마디로 방향 전환: <strong>"Machbase → ClickHouse로 전부 이관합시다"</strong>.
+      원래 사업 계획엔 없던 작업. 하지만 이 결정이 프로젝트를 살렸다.
+    </div>
+
+    <h4>ClickHouse 이관 (12/17 ~ 12/21)</h4>
+    <ul>
+      <li><code>WIDE_2CRM_THICK</code> (6.3억 건): 2025-12-17 완료</li>
+      <li><code>WIDE_2CRM_OTHER</code> (2,900만 건): 2025-12-21 완료</li>
+      <li>COIL_GRADE, Weather: 별도 이관 완료</li>
+    </ul>
+
+    <div class="callout ok">
+      <span class="label">결과</span>
+      기존 Machbase에서 15분 걸리던 1일치 조회가 ClickHouse에서 <strong>2~3초</strong>.
+      wide_2crm_thick → crm.crm_sensor_data. 이제서야 모델링을 시작할 수 있었다.
+    </div>
+  </div>
+</div>
+
+<!-- ── PHASE 3 ── -->
+<div class="phase orange" id="phase3">
+  <div class="phase-dot"></div>
+  <div class="phase-header">
+    <span class="phase-date">2025.11.27</span>
+    <span class="phase-title">③ 첫 모델 ver22 — "왜 정확도가 이 모양이지?"</span>
+    <span class="phase-subtitle">Week 1 (병렬 진행)</span>
+  </div>
+  <div class="phase-body">
+    <p>
+      데이터 이관과 병렬로, 샘플 데이터(1주일치)로 첫 모델 ver22를 만들었다.
+      LightGBM 기본 파라미터. RMSE는… <strong>크게 나왔다</strong>. 예측값이 실측값의 평균 근처를 왔다갔다.
+    </p>
+
+    <div class="compare">
+      <div class="col bad">
+        <h5>ver22 초기</h5>
+        <div class="big">RMSE ≈ <span style="color:var(--red)">수십~수백 μm</span></div>
+        <div style="font-size:12px;color:var(--gray);margin-top:4px">피처 200+, 기본 파라미터, 샘플 7일</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="col good">
+        <h5>ver22 최적화</h5>
+        <div class="big">RMSE 개선</div>
+        <div style="font-size:12px;color:var(--gray);margin-top:4px">파라미터 튜닝, OTIME 정렬, nan 제거</div>
+      </div>
+    </div>
+
+    <h4>발견한 문제들</h4>
+    <ul>
+      <li><strong>timestamp 미정렬</strong>: 센서 wide 테이블과 코일 마스터 조인 시 시간이 뒤섞여 있었음</li>
+      <li><strong>NaN 폭탄</strong>: 센서 태그 중 일부는 90% 이상이 NaN</li>
+      <li><strong>강종(steel_grade) 누락</strong>: COIL_GRADE 매핑 실패 케이스 다수</li>
+      <li><strong>단위 불일치</strong>: 일부 태그는 μm, 일부는 mm. 섞여서 학습 중이었음</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">교훈</span>
+      "Garbage In, Garbage Out"을 몸으로 배웠다. 모델 튜닝 전에 데이터 정제부터.
+    </div>
+  </div>
+</div>
+
+<!-- ── PHASE 4 ── -->
+<div class="phase red" id="phase4">
+  <div class="phase-dot"></div>
+  <div class="phase-header">
+    <span class="phase-date">2025.11.27</span>
+    <span class="phase-title">④ OOM 대참사 — 하루 종일 학습, 새벽에 커널 죽음</span>
+    <span class="phase-subtitle">Week 1 후반</span>
+  </div>
+  <div class="phase-body">
+    <p>
+      ver22를 전체 데이터로 돌리자 <strong>OOM (Out Of Memory)</strong>.
+      64GB 서버에서도 죽었다. DataFrame 단일 로드 방식으로는 6.3억 건을 다룰 수 없었다.
+    </p>
+
+    <div class="code">
+      <span class="comment"># ver22 초기 — 이대로는 죽는다</span><br>
+      df = pd.read_sql(<span class="str">"SELECT * FROM crm.crm_sensor_data"</span>, conn)<br>
+      <span class="comment"># MemoryError: Unable to allocate 48.3 GiB for an array</span>
+    </div>
+
+    <h4>해결 과정 — Parquet 청크 저장 방식 도입 (commit: "Fix OOM")</h4>
+    <ul>
+      <li>ClickHouse에서 월별 청크로 쿼리</li>
+      <li>각 청크를 parquet로 즉시 저장 (RAM 해제)</li>
+      <li>학습 시 parquet를 스트리밍 로드 → LightGBM의 native_format 이용</li>
+      <li>중간 체크포인트 저장으로 재시작 가능하게</li>
+    </ul>
+
+    <div class="callout ok">
+      <span class="label">결과</span>
+      메모리 피크 <strong>48GB → 8GB</strong>로 감소. 학습 시간은 여전히 6시간+지만, 적어도 완주 가능해짐.
+    </div>
+
+    <div class="quote">
+      "새벽 3시에 학습 돌려놓고 잠들었는데 아침에 커널이 죽어있던 날이 일주일 넘게 있었다. 결국 저장-재개 로직이 살렸다."
+    </div>
+  </div>
+</div>
+
+<!-- ── PHASE 5 ── -->
+<div class="phase" id="phase5">
+  <div class="phase-dot"></div>
+  <div class="phase-header">
+    <span class="phase-date">2025.11.28</span>
+    <span class="phase-title">⑤ 피처 정리 ver23 — "중요도 0 피처가 6개?"</span>
+    <span class="phase-subtitle">Week 1 끝</span>
+  </div>
+  <div class="phase-body">
+    <p>
+      ver23에서 <strong>stratified sampling + 피처 엔지니어링</strong>을 개선했다.
+      feature_importance를 찍어보니 예상과 다른 결과가 나왔다.
+    </p>
+
+    <div class="stat-row">
+      <div class="stat"><div class="num" style="color:var(--blue)">68</div><div class="label">학습 피처 수</div></div>
+      <div class="stat"><div class="num" style="color:var(--red)">6</div><div class="label">중요도 0 피처</div></div>
+      <div class="stat"><div class="num" style="color:var(--orange)">3</div><div class="label">예상 외 0 피처</div></div>
+      <div class="stat"><div class="num" style="color:var(--green)">62</div><div class="label">유효 피처</div></div>
+    </div>
+
+    <h4>중요도 0의 미스터리</h4>
+    <ul>
+      <li><code>OTIME_YEAR</code>, <code>OTIME_MONTH</code>: 데이터 기간이 좁아서 분산 없음 → 당연한 결과</li>
+      <li><code>SNOW</code>: 2CRM 실내 공정. 예상 가능</li>
+      <li><strong><code>DK_N2_CPU2_DB801_DD86</code></strong>: 예상 외. 알고 보니 <strong>전체 값이 상수</strong>였음. 센서 고장 가능성</li>
+      <li><strong><code>DK_2CR_IBA_DB230_REAL76, REAL108, REAL232</code></strong>: 중요도 0. 수동 점검 결과 <strong>다른 핵심 피처와 완전 상관 (r=0.99+)</strong>. LightGBM이 중복으로 판단하고 drop</li>
+    </ul>
+
+    <div class="callout info">
+      <span class="label">발견</span>
+      피처 중요도 0이 반드시 "쓸모없음"을 뜻하지는 않는다. "다른 피처와 겹침" 또는 "센서 이상"일 수 있다.
+      덕분에 역으로 <strong>고장난 센서를 역탐지</strong>하는 용도로 쓸 수 있다는 아이디어가 나왔다.
+    </div>
+  </div>
+</div>
+
+<!-- ── PHASE 6 ── -->
+<div class="phase purple" id="phase6">
+  <div class="phase-dot"></div>
+  <div class="phase-header">
+    <span class="phase-date">2025.12.23</span>
+    <span class="phase-title">⑥ PSM 분기 — "강종이 다르면 모델도 달라야 하지 않나?"</span>
+    <span class="phase-subtitle">Week 4</span>
+  </div>
+  <div class="phase-body">
+    <p>
+      ver23까지는 모든 강종을 하나의 모델로 학습했다. 그런데 잔차를 강종별로 쪼개서 봤더니…
+      <strong>SK강</strong>에서 편향이 크고, <strong>SC강</strong>은 괜찮은데, <strong>일반강</strong>은 표본이 너무 많아 모델을 잡아먹고 있었다.
+    </p>
+
+    <div class="callout err">
+      <span class="label">문제</span>
+      단일 모델이 "평균적으로" 잘 맞추지만, 특정 강종 + 특정 패스에서는 계통적으로 빗나감.
+      현장에서는 이게 바로 불량률로 이어진다.
+    </div>
+
+    <h4>PSM (Pass Schedule Management) 모델 탄생</h4>
+    <p>
+      두께 예측과 별개로 <strong>패스 스케줄 관리</strong>용 모델이 필요하다는 판단.
+      센서 태그가 아닌 <strong>공정 변수(두께/속도/장력/패스/강종)</strong>만으로 압연력을 예측하는 도메인 모델을 시도했다.
+    </p>
+
+    <ul>
+      <li><strong>PSM v1</strong>: 강종 구분 없이 단일 모델 → 일반화 실패</li>
+      <li><strong>PSM v2 (steel_grade 기반)</strong>: 강종 문자열 매핑. 오타 섞인 케이스에서 터짐</li>
+      <li><strong>PSM v3 (real_grade 기반)</strong>: COIL_GRADE 연동, 강종별 독립 모델. 3개 강종(SC/일반/SK) 각각 학습</li>
+    </ul>
+
+    <div class="callout ok">
+      <span class="label">결론</span>
+      PSM v3은 <strong>22 피처, 3개 강종별 모델</strong>로 확정.
+      메인 예측 모델(ver21)과는 <strong>역할이 다른</strong> 독립 모델로 유지하기로 결정.
+      <strong>"한 모델로 모든 걸 풀려는 욕심을 내려놨다"</strong>는 게 큰 전환점.
+    </div>
+  </div>
+</div>
+
+<!-- ── PHASE 7 ── -->
+<div class="phase red" id="phase7">
+  <div class="phase-dot"></div>
+  <div class="phase-header">
+    <span class="phase-date">2025.12.24</span>
+    <span class="phase-title">⑦ 실시간 충격 — "13MB 모델이 8초 걸린다고요?"</span>
+    <span class="phase-subtitle">Week 5</span>
+  </div>
+  <div class="phase-body">
+    <p>
+      realtime_app에 ver21 LightGBM 모델(13MB, .pkl)을 탑재해서 실시간 예측을 돌리려 했다.
+      웹소켓으로 센서 데이터를 받고, FastAPI 백엔드에서 예측을 반환하는 구조.
+    </p>
+
+    <div class="callout err">
+      <span class="label">문제</span>
+      ver21 모델 단일 추론에 약 <strong>200~500ms</strong>. 문제는 <strong>프로세스 시작 시 로딩 시간</strong>이 <strong>6~8초</strong>.
+      systemd restart 할 때마다 "예측 서비스 죽었다" 알림이 날아왔다.
+    </div>
+
+    <h4>추가로 드러난 문제들</h4>
+    <ul>
+      <li>Python pickle 로드 + LightGBM 바인딩 초기화에만 5초 이상</li>
+      <li>메모리 점유 약 600MB — 경량 서버에서 부담</li>
+      <li>피처 준비 로직도 Pandas 기반이라 단건 추론에 불필요하게 무거움</li>
+      <li>feature 순서가 어긋나면 silent하게 이상한 예측 반환 (디버깅 악몽)</li>
+    </ul>
+
+    <div class="quote">
+      "배치에서는 최고의 모델이 실시간에서는 최악의 모델일 수 있다. 이걸 몸으로 배웠다."
+    </div>
+  </div>
+</div>
+
+<!-- ── PHASE 8 ── -->
+<div class="phase green" id="phase8">
+  <div class="phase-dot"></div>
+  <div class="phase-header">
+    <span class="phase-date">2025.12.30</span>
+    <span class="phase-title">⑧ 둘로 나누기 — ver21(배치) + v24 ONNX(실시간)</span>
+    <span class="phase-subtitle">Week 5~6 · 핵심 전환점</span>
+  </div>
+  <div class="phase-body">
+    <p>
+      이 시점에 팀 전체가 모여 결정을 내렸다. <strong>"모델을 둘로 나누자"</strong>.
+      하나는 정확도 우선의 <strong>배치 분석용 모델</strong>, 다른 하나는 속도 우선의 <strong>실시간 추론용 경량 모델</strong>.
+    </p>
+
+    <h4>설계 원칙</h4>
+    <ul>
+      <li><strong>ver21 (배치)</strong>: 68 피처 전부 유지. 정확도 최우선. 오프라인 분석과 리포트 생성용.</li>
+      <li><strong>v24 ONNX (실시간)</strong>: 피처 축소 + ONNX 변환 + 추론 최적화. 현장 모니터링용.</li>
+    </ul>
+
+    <h4>v24 피처 축소 작업 (68 → 50)</h4>
+    <ul>
+      <li>중요도 0 피처 6개 제거</li>
+      <li>상관 높은 피처 3쌍 중 하나씩 제거 (6개)</li>
+      <li>실시간 Kafka 파이프라인에서 안정적으로 들어오지 않는 센서 6개 제거</li>
+      <li>합계 18개 피처 제거 → 50개 확정</li>
+    </ul>
+
+    <h4>ONNX 변환 (2025.12.30 "ONNX v24 dual model support")</h4>
+    <div class="code">
+      <span class="comment"># LightGBM → ONNX 변환</span><br>
+      <span class="key">from</span> onnxmltools <span class="key">import</span> convert_lightgbm<br>
+      <span class="key">from</span> skl2onnx.common.data_types <span class="key">import</span> FloatTensorType<br>
+      onnx_model = convert_lightgbm(lgbm, initial_types=[(<span class="str">'input'</span>, FloatTensorType([<span class="num">None</span>, <span class="num">50</span>]))])<br>
+    </div>
+
+    <div class="compare">
+      <div class="col bad">
+        <h5>이전 (ver21 단일)</h5>
+        <div class="big">13MB · 6~8초 로딩</div>
+        <div style="font-size:12px;color:var(--gray);margin-top:4px">단건 추론 200~500ms</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="col good">
+        <h5>이후 (v24 ONNX)</h5>
+        <div class="big">1.9MB · &lt;500ms 로딩</div>
+        <div style="font-size:12px;color:var(--gray);margin-top:4px">단건 추론 5~15ms</div>
+      </div>
+    </div>
+
+    <div class="callout ok">
+      <span class="label">효과</span>
+      <strong>모델 크기 -85%, 추론 속도 ~20배 개선</strong>. 실시간 서비스가 드디어 가능해졌다.
+      배치 분석은 ver21을 그대로 사용 → 정확도 손실 없음.
+    </div>
+
+    <div class="callout warn">
+      <span class="label">대가</span>
+      모델을 둘로 유지하는 비용: 학습 파이프라인 2개 유지, feature 정의 sync 필요,
+      predictor 서비스 코드 분리 (prediction.py + prediction_onnx.py).
+      "복잡도"가 붙었지만, 실시간 요구사항을 만족시킨 것이 더 중요했다.
+    </div>
+  </div>
+</div>
+
+<!-- ── PHASE 9 ── -->
+<div class="phase red" id="phase9">
+  <div class="phase-dot"></div>
+  <div class="phase-header">
+    <span class="phase-date">2025.12.29</span>
+    <span class="phase-title">⑨ 센서 매핑 지옥 — "예측값이 왜 목표치를 따라가?"</span>
+    <span class="phase-subtitle">Week 5</span>
+  </div>
+  <div class="phase-body">
+    <p>
+      실시간 대시보드에 숫자가 흘러나오기 시작했는데, <strong>예측값이 실측값이 아니라 목표치를 따라가는</strong> 기현상이 발생했다.
+      "모델이 목표를 예측하고 있어요. 뭔가 이상해요."
+    </p>
+
+    <div class="callout err">
+      <span class="label">원인</span>
+      Kafka에서 들어오는 센서 태그를 v24 모델 feature와 매핑할 때, <strong>DB230_REAL4(실측 두께)</strong>와
+      <strong>DB230_REAL108(목표 두께)</strong>이 <strong>뒤바뀌어 있었음</strong>. 12/29 하루에만 5개의 매핑 버그 수정.
+    </div>
+
+    <h4>그 날 수정된 매핑 버그들 (commit 기록)</h4>
+    <ul>
+      <li><strong>"Fix thickness data display by correcting sensor mapping"</strong> — 실측/목표 뒤바뀜</li>
+      <li><strong>"Fix speed sensor mapping (REAL100/104 for entry/exit speed)"</strong> — 입측/출측 속도 반대</li>
+      <li><strong>"Fix rolling status detection logic"</strong> — 압연 중/정지 상태 오탐</li>
+      <li><strong>"Fix WebSocket broadcast and add Toast notifications"</strong> — 메시지 유실</li>
+      <li><strong>"Improve data continuity and reduce gaps in realtime display"</strong> — 데이터 구멍</li>
+    </ul>
+
+    <div class="quote">
+      "12월 29일은 역사상 가장 긴 하루였다. 오전에 발견한 매핑 버그 하나가 새로운 버그 네 개를 끌고 나왔다."
+    </div>
+
+    <div class="callout info">
+      <span class="label">교훈</span>
+      <strong>센서 태그 명세서는 반드시 현장에서 검증</strong>해야 한다.
+      IBA(PLC 로그) 채널 번호는 서류와 실제가 다른 경우가 존재한다.
+      그리고 모델은 <strong>잘못된 입력이 들어와도 소리 없이 틀린 답을 낸다</strong>.
+    </div>
+  </div>
+</div>
+
+<!-- ── PHASE 10 ── -->
+<div class="phase green" id="phase10">
+  <div class="phase-dot"></div>
+  <div class="phase-header">
+    <span class="phase-date">2025.12.31 ~ 2026.04.10</span>
+    <span class="phase-title">⑩ 마무리 — 배포, 모니터링, 최종 평가</span>
+    <span class="phase-subtitle">Week 6 ~ 20</span>
+  </div>
+  <div class="phase-body">
+    <p>
+      모델 두 개(ver21 + v24) + PSM v3이 자리를 잡은 이후는 주로 <strong>운영 안정화</strong>였다.
+      실시간 파이프라인을 Kafka 기반으로 이중화하고, 환경변수로 여러 환경을 지원하고, 성능 통계 서비스를 얹었다.
+    </p>
+
+    <h4>주요 마일스톤</h4>
+    <ul>
+      <li><strong>2025.12.31</strong>: ONNX v24 모델 컬럼을 realtime_sync 파이프라인에 통합</li>
+      <li><strong>2026.01.06</strong>: 2026년 데이터 테이블(THICK2, OTHER3)로 소스 전환</li>
+      <li><strong>2026.01.07</strong>: 기상 데이터 backfill 스크립트 완성</li>
+      <li><strong>2026.01.13</strong>: Multi-server 구성, systemd 서비스화, nginx 프록시</li>
+      <li><strong>2026.03.31</strong>: Kafka/ClickHouse 환경변수 지원 (remote 서버 대응)</li>
+      <li><strong>2026.04.09</strong>: 최종 평가 자료 배포</li>
+      <li><strong>2026.04.10</strong>: 피처 중요도 분석 리포트 추가</li>
+    </ul>
+
+    <div class="callout ok">
+      <span class="label">최종 상태</span>
+      ver21 (배치) + v24 ONNX (실시간) + PSM v3 (도메인) 삼각구도로 운영.
+      메인 질의응답 페이지, 실시간 대시보드, 두께 예측 리포트 모두 안정 동작.
+    </div>
+  </div>
+</div>
+
+</div><!-- /.timeline -->
+
+<!-- ══════════════════════════ RETRO ══════════════════════════ -->
+<h2 class="section-title" id="retro">회고 — 다시 시작한다면</h2>
+
+<div class="phase-body" style="background:white; border-radius:14px; padding:32px 36px; box-shadow:0 4px 20px rgba(0,0,0,0.05);">
+  <h4 style="color:var(--green)">잘한 것</h4>
+  <ul>
+    <li><strong>Machbase → ClickHouse 이관 결정</strong>: 없었으면 프로젝트 자체가 불가능</li>
+    <li><strong>Parquet 청크 저장</strong>: OOM 없이 6.3억 건을 다룰 수 있게 된 결정적 기술</li>
+    <li><strong>모델 분리 (ver21 + v24)</strong>: 배치와 실시간의 요구사항이 다름을 인정한 것</li>
+    <li><strong>PSM을 별도 모델로 유지</strong>: "한 모델로 모든 걸" 욕심을 내려놓은 것</li>
+  </ul>
+
+  <h4 style="color:var(--red)">아쉬운 것</h4>
+  <ul>
+    <li><strong>센서 태그 검증을 미뤘던 것</strong>: 실시간 통합 단계에서야 매핑 오류 발견. 초기에 현장 검증이 있었다면 12/29 하루를 아낄 수 있었다.</li>
+    <li><strong>단위 통일을 나중에 한 것</strong>: μm/mm 혼재 상태로 며칠간 학습을 돌린 건 완전한 시간 낭비</li>
+    <li><strong>피처 중요도 0을 초기에 간과한 것</strong>: 센서 고장 힌트를 더 빨리 잡을 수 있었다</li>
+    <li><strong>버전 네이밍(ver21~ver24)</strong>: 초기에 실험용/운영용 구분 없이 버전 숫자만 올리다 보니 어느 게 어디에 쓰이는지 혼동</li>
+  </ul>
+
+  <h4 style="color:var(--blue)">다시 한다면 — 5가지 원칙</h4>
+  <ol style="padding-left:20px; font-size:14px; line-height:2">
+    <li><strong>데이터 파이프라인부터 확정한다.</strong> 모델링은 그 다음. 데이터가 준비되지 않으면 아무것도 못한다.</li>
+    <li><strong>배치와 실시간은 처음부터 다른 모델로 계획한다.</strong> 같이 가려다가 둘 다 망칠 수 있다.</li>
+    <li><strong>센서 태그는 첫 주에 현장 검증한다.</strong> 서류와 실제는 다르다.</li>
+    <li><strong>피처 중요도 0은 버그 신호일 수 있다.</strong> 버리기 전에 반드시 원인을 확인한다.</li>
+    <li><strong>도메인 지식이 필요한 서브 문제는 별도 모델로 뽑는다.</strong> PSM처럼.</li>
+  </ol>
+
+  <div class="quote" style="margin-top:24px">
+    결국 이 프로젝트의 본질은 "정확한 모델 만들기"가 아니라 "<strong>현장에서 동작하는 모델 만들기</strong>"였다.
+    정확도 99%의 모델도 실시간으로 돌지 않으면 의미가 없고,
+    실시간 모델도 센서 매핑이 틀리면 의미가 없다.
+    5개월의 시행착오는 그 한 문장을 체득하는 과정이었다.
+  </div>
+</div>
+
+</div><!-- /.container -->
+
+<div style="text-align:center; padding:24px 0 48px; color:#aaa; font-size:12px;">
+  DKIS 2CRM Thickness Prediction Project &mdash; Development Scenario Document &mdash; 2026.04.10
+</div>
+
+</body>
+</html>
